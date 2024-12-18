@@ -41,26 +41,45 @@ final class SignInView: UIView {
         return stackView
     }()
     
-    private var emailTextField: UITextField = {
-        let textField = UITextField()
+    private var emailTextField: TextFieldWithLeftImage = {
+        let textField = TextFieldWithLeftImage()
         textField.placeholder = "E-mail"
-        textField.leftViewMode = .always
-        textField.leftView = UIImageView(image: .email)
+        textField.addImage(.email)
         textField.backgroundColor = .white
         textField.layer.cornerRadius = 5
         textField.layer.masksToBounds = true
         return textField
     }()
     
-    private var passwordTextField: UITextField = {
-        let textField = UITextField()
+    private var passwordTextField: TextFieldWithLeftImage = {
+        let textField = TextFieldWithLeftImage()
         textField.placeholder = "Password"
-        textField.leftViewMode = .always
-        textField.leftView = UIImageView(image: .password)
+        textField.addImage(.password)
         textField.backgroundColor = .white
         textField.layer.cornerRadius = 5
         textField.layer.masksToBounds = true
         return textField
+    }()
+    
+    private var signInButton: UIButton = {
+        let button = UIButton()
+        var configuration = UIButton.Configuration.plain()
+        configuration.title = "Sign In"
+        configuration.background.backgroundColor = #colorLiteral(red: 0.05490196078, green: 0.6470588235, blue: 0.9137254902, alpha: 1)
+        configuration.background.cornerRadius = 10
+        configuration.baseForegroundColor = .white
+        button.configuration = configuration
+        return button
+    }()
+    
+    private var anyAuthenticationMethod: UITextView = {
+        let textView = UITextView()
+        textView.textColor = .white
+        textView.backgroundColor = .clear
+        textView.isEditable = false
+        textView.isSelectable = false
+        textView.textAlignment = .center
+        return textView
     }()
     
     //MARK: - Initialization
@@ -99,6 +118,8 @@ private extension SignInView {
         addSubview(titleLabel)
         addSubview(supportLabel)
         addSubview(textFieldsStackView)
+        addSubview(signInButton)
+        addSubview(anyAuthenticationMethod)
     }
     
     func setupConstraints() {
@@ -113,19 +134,37 @@ private extension SignInView {
             make.top.equalTo(logoImageView.snp.bottom).offset(25)
             make.centerX.equalToSuperview()
             make.leading.trailing.equalToSuperview().inset(26)
-            make.height.equalTo(42)
         }
         
         supportLabel.snp.makeConstraints { make in
             make.top.equalTo(titleLabel.snp.bottom).offset(4)
             make.centerX.equalToSuperview()
             make.leading.trailing.equalToSuperview().inset(26)
-            make.height.equalTo(42)
         }
         
         textFieldsStackView.snp.makeConstraints { make in
             make.top.equalTo(supportLabel.snp.bottom).offset(48)
             make.leading.trailing.equalToSuperview().inset(26)
+        }
+        
+        signInButton.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview().inset(31)
+            make.top.equalTo(textFieldsStackView.snp.bottom).offset(69)
+        }
+        
+        anyAuthenticationMethod.snp.makeConstraints { make in
+            make.top.equalTo(signInButton.snp.bottom).offset(19)
+            make.centerX.equalToSuperview()
+            make.leading.trailing.greaterThanOrEqualToSuperview().inset(31)
+            make.bottom.equalToSuperview().inset(188)
+        }
+        
+        emailTextField.snp.makeConstraints { make in
+            make.height.equalTo(42)
+        }
+        
+        passwordTextField.snp.makeConstraints { make in
+            make.height.equalTo(42)
         }
     }
 }
