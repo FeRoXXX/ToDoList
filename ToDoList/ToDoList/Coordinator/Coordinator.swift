@@ -7,16 +7,27 @@
 
 import UIKit
 
-protocol Coordinator: AnyObject {
+class Coordinator: AnyObject {
     
     //MARK: - Public properties
     
-    var children: [Coordinator] { get set }
-    var navigationController: UINavigationController { get set }
+    var children: [Coordinator] = []
+    var navigationController: UINavigationController
+    
+    //MARK: - Initialization
+    init(navigationController: UINavigationController) {
+        self.navigationController = navigationController
+    }
     
     //MARK: - Start function
     
-    func start()
+    func start() {
+        preconditionFailure("This method needs to be overriden by concrete subclass.")
+    }
+    
+    func finish() {
+        preconditionFailure("This method needs to be overriden by concrete subclass.")
+    }
 }
 
 extension Coordinator {
@@ -29,7 +40,15 @@ extension Coordinator {
     
     //MARK: - Did finish coordinator
     
-    func didFinish(_ coordinator: Coordinator) {
+    func removeChild(_ coordinator: Coordinator) {
         children = children.filter { $0 !== coordinator }
+    }
+}
+
+//MARK: - Equatable
+
+extension Coordinator: Equatable {
+    static func == (lhs: Coordinator, rhs: Coordinator) -> Bool {
+        return lhs === rhs
     }
 }

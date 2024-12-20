@@ -12,19 +12,17 @@ final class OnBoardingCoordinator: Coordinator {
     
     private var bindings: Set<AnyCancellable> = []
     private(set) var didFinish: PassthroughSubject<Void, Never> = .init()
-    var children: [Coordinator] = []
-    var navigationController: UINavigationController
     var pages: [OnBoardingViewController] = [OnBoardingViewController(),
                                              OnBoardingViewController(),
                                              OnBoardingViewController(),
                                              OnBoardingViewController()
     ]
     
-    init(navigationController: UINavigationController) {
-        self.navigationController = navigationController
+    override init(navigationController: UINavigationController) {
+        super.init(navigationController: navigationController)
     }
     
-    func start() {
+    override func start() {
         let viewModel = OnBoardingMainViewModel(totalPages: pages.count)
         viewModel.routeToAuthentication
             .receive(on: DispatchQueue.main)

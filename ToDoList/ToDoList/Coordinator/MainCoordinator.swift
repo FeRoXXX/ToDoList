@@ -15,17 +15,12 @@ final class MainCoordinator: Coordinator {
     private var bindings: Set<AnyCancellable> = []
     private var firstOpenService: FirstOpenService
     
-    //MARK: - Public properties
-    
-    var children: [Coordinator] = []
-    var navigationController: UINavigationController
-    
     init(navigationController: UINavigationController, firstOpenService: FirstOpenService) {
-        self.navigationController = navigationController
         self.firstOpenService = firstOpenService
+        super.init(navigationController: navigationController)
     }
     
-    func start() {
+    override func start() {
         if firstOpenService.fetchState() {
             goToOnboarding()
         } else {
@@ -41,9 +36,10 @@ extension MainCoordinator {
         coordinator.didFinish
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
-                self?.didFinish(coordinator)
+                self?.removeChild(coordinator)
                 self?.firstOpenService.set(isFirstOpen: false)
                 self?.start()
+                self?.bindings.removeAll()
             }
             .store(in: &bindings)
         children.append(coordinator)

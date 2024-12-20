@@ -11,14 +11,12 @@ import Combine
 final class AuthenticationCoordinator: Coordinator {
     
     private var bindings: Set<AnyCancellable> = []
-    var children: [Coordinator] = []
-    var navigationController: UINavigationController
     
-    init(navigationController: UINavigationController) {
-        self.navigationController = navigationController
+    override init(navigationController: UINavigationController) {
+        super.init(navigationController: navigationController)
     }
     
-    func start() {
+    override func start() {
         goToSignInController()
     }
 }
