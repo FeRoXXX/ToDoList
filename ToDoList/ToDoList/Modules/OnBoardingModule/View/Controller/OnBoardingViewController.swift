@@ -2,7 +2,7 @@
 //  OnBoardingViewController.swift
 //  ToDoList
 //
-//  Created by Александр Федоткин on 18.12.2024.
+//  Created by Александр Федоткин on 19.12.2024.
 //
 
 import UIKit
@@ -29,6 +29,10 @@ final class OnBoardingViewController: UIViewController {
     @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    func setupStaticContent(_ data: OnBoardingStaticElements) {
+        contentView.setupStaticElement(data)
     }
 }
 

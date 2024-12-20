@@ -14,6 +14,7 @@ final class OnBoardingView: UIView {
     
     private var pageImageView: UIImageView = {
         let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFit
         return imageView
     }()
     
@@ -21,6 +22,7 @@ final class OnBoardingView: UIView {
         let label = UILabel()
         label.textColor = .white
         label.numberOfLines = 0
+        label.textAlignment = .center
         label.font = .init(name: "Poppins-medium", size: 20)
         return label
     }()
@@ -70,7 +72,19 @@ private extension OnBoardingView {
         
         pageTextLabel.snp.makeConstraints { make in
             make.top.equalTo(pageImageView.snp.bottom).offset(65)
-            make.leading.trailing.greaterThanOrEqualToSuperview().inset(67.5)
+            make.leading.trailing.equalToSuperview().inset(20)
         }
+    }
+}
+
+//MARK: - Public extension
+
+extension OnBoardingView {
+    
+    //MARK: - Setup static elements
+    
+    func setupStaticElement(_ data: OnBoardingStaticElements) {
+        pageImageView.image = UIImage(named: data.imageName)
+        pageTextLabel.text = data.description
     }
 }

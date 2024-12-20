@@ -7,10 +7,14 @@
 
 import UIKit
 import SnapKit
+import Combine
 
 final class SignUpView: UIView {
     
     //MARK: - Private properties
+    
+    private(set) var textDidTapped: PassthroughSubject<Void, Never> = .init()
+    private(set) var signUpDidTapped: PassthroughSubject<(fullName: String?, email: String?, password: String?), Never> = .init()
     
     private let logoImageView: UIImageView = {
         let imageView = UIImageView()
@@ -20,15 +24,11 @@ final class SignUpView: UIView {
     
     private let titleLabel: UILabel = {
         let label = UILabel()
-        label.text = "Welcome to DO IT"
-        label.font = .systemFont(ofSize: 25, weight: .medium)
-        label.textColor = .white
         return label
     }()
     
     private let supportLabel: UILabel = {
         let label = UILabel()
-        label.text = "create an account and Join us now!"
         label.font = .systemFont(ofSize: 18, weight: .medium)
         label.textColor = .white
         return label
@@ -43,7 +43,6 @@ final class SignUpView: UIView {
     
     private var fullNameTextField: TextFieldWithLeftImage = {
         let textField = TextFieldWithLeftImage()
-        textField.placeholder = "Full Name"
         textField.addImage(UIImage(named: "fullName"))
         textField.backgroundColor = .white
         textField.layer.cornerRadius = 5
@@ -53,7 +52,6 @@ final class SignUpView: UIView {
     
     private var emailTextField: TextFieldWithLeftImage = {
         let textField = TextFieldWithLeftImage()
-        textField.placeholder = "E-mail"
         textField.addImage(.email)
         textField.backgroundColor = .white
         textField.layer.cornerRadius = 5
@@ -63,7 +61,6 @@ final class SignUpView: UIView {
     
     private var passwordTextField: TextFieldWithLeftImage = {
         let textField = TextFieldWithLeftImage()
-        textField.placeholder = "Password"
         textField.addImage(.password)
         textField.backgroundColor = .white
         textField.layer.cornerRadius = 5
@@ -71,23 +68,20 @@ final class SignUpView: UIView {
         return textField
     }()
     
-    private var signInButton: UIButton = {
+    private lazy var signUpButton: UIButton = {
         let button = UIButton()
         var configuration = UIButton.Configuration.plain()
-        configuration.title = "Sign In"
         configuration.background.backgroundColor = #colorLiteral(red: 0.05490196078, green: 0.6470588235, blue: 0.9137254902, alpha: 1)
         configuration.background.cornerRadius = 10
         configuration.baseForegroundColor = .white
         button.configuration = configuration
+        button.addTarget(self, action: #selector(signUpButtonAction), for: .touchUpInside)
         return button
     }()
     
-    private var anyAuthenticationMethod: UITextView = {
-        let label = UITextView()
-        label.text = "Already have an account? sign in"
-        label.textColor = .white
-        label.textAlignment = .center
-        label.font = .init(name: "DarumadropOne-Regular", size: 14)
+    private var anyAuthenticationMethod: UILabel = {
+        let label = UILabel()
+        label.backgroundColor = .clear
         return label
     }()
     
@@ -127,7 +121,7 @@ private extension SignUpView {
         addSubview(titleLabel)
         addSubview(supportLabel)
         addSubview(textFieldsStackView)
-        addSubview(signInButton)
+        addSubview(signUpButton)
         addSubview(anyAuthenticationMethod)
     }
     
@@ -156,13 +150,13 @@ private extension SignUpView {
             make.leading.trailing.equalToSuperview().inset(26)
         }
         
-        signInButton.snp.makeConstraints { make in
+        signUpButton.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(31)
             make.top.equalTo(textFieldsStackView.snp.bottom).offset(69)
         }
         
         anyAuthenticationMethod.snp.makeConstraints { make in
-            make.top.equalTo(signInButton.snp.bottom).offset(19)
+            make.top.equalTo(signUpButton.snp.bottom).offset(19)
             make.centerX.equalToSuperview()
             make.leading.trailing.greaterThanOrEqualToSuperview().inset(31)
             make.bottom.equalToSuperview().inset(188)
@@ -170,14 +164,35 @@ private extension SignUpView {
         
         fullNameTextField.snp.makeConstraints { make in
             make.height.equalTo(42)
+            make.height.equalTo(emailTextField.snp.height)
+            make.height.equalTo(passwordTextField.snp.height)
         }
-        
-        emailTextField.snp.makeConstraints { make in
-            make.height.equalTo(42)
-        }
-        
-        passwordTextField.snp.makeConstraints { make in
-            make.height.equalTo(42)
+    }
+    
+    //MARK: - Button action
+    
+    @objc
+    func signUpButtonAction() {
+        signUpDidTapped.send((fullNameTextField.text, emailTextField.text, passwordTextField.text))
+    }
+}
+
+//MARK: - Public extension
+
+extension SignUpView {
+    
+    //MARK: - Initialization text constants
+    
+    func setupConstants(_ data: SignUpStaticText) {
+        titleLabel.attributedText = data.title
+        supportLabel.text = data.support
+        emailTextField.placeholder = data.emailPlaceholder
+        fullNameTextField.placeholder = data.fullNamePlaceholder
+        passwordTextField.placeholder = data.passwordPlaceholder
+        signUpButton.configuration?.title = data.signUpButtonTitle
+        anyAuthenticationMethod.attributedText = data.additionalInfo
+        anyAuthenticationMethod.addRangeGesture(stringRange: "sign in") { [weak self] in
+            self?.textDidTapped.send()
         }
     }
 }

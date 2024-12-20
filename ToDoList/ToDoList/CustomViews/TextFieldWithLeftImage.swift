@@ -16,6 +16,7 @@ final class TextFieldWithLeftImage: UITextField {
     
     func addImage(_ image: UIImage?) {
         imageView.image = image
+        imageView.frame.size = image?.size ?? CGSize(width: 24, height: 24)
         let imageWithPadding = UIView(frame: CGRect(x: 0, y: 0, width: 32 + imageView.frame.width, height: imageView.frame.height))
         imageView.center = imageWithPadding.center
         imageWithPadding.addSubview(imageView)

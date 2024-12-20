@@ -1,0 +1,93 @@
+//
+//  AnimatedPageControl.swift
+//  ToDoList
+//
+//  Created by Александр Федоткин on 19.12.2024.
+//
+
+import UIKit
+
+class AnimatedPageControl: UIView {
+    var numberOfPages: Int = 0 {
+        didSet { setupDots() }
+    }
+    var currentPage: Int = 0 {
+        didSet { updateDots() }
+    }
+    var dotHeight: CGFloat = 8
+    var dotWidth: CGFloat = 18
+    var selectedDotHeight: CGFloat = 8
+    var selectedDotWidth: CGFloat = 33
+    var dotSpacing: CGFloat = 9
+    var dotColor: UIColor = .white
+    var selectedDotColor: UIColor = .white
+
+    private var dots: [UIView] = []
+
+    private func setupDots() {
+        dots.forEach { $0.removeFromSuperview() }
+        dots = (0..<numberOfPages).map { _ in
+            let dot = UIView()
+            dot.backgroundColor = dotColor
+            dot.layer.cornerRadius = dotHeight / 2
+            addSubview(dot)
+            return dot
+        }
+        layoutDots()
+    }
+
+    private func layoutDots() {
+        var previousWidth: CGFloat = 0
+        for (index, dot) in dots.enumerated() {
+            let height = index == currentPage ? selectedDotHeight : dotHeight
+            let width = index == currentPage ? selectedDotWidth : dotWidth
+            dot.frame = CGRect(
+                x: previousWidth,
+                y: 0,
+                width: width,
+                height: height
+            )
+            previousWidth += width + dotSpacing
+            dot.layer.cornerRadius = height / 2
+        }
+        frame.size = CGSize(
+            width: (selectedDotWidth + dotSpacing) + CGFloat(numberOfPages - 1) * (dotWidth + dotSpacing) - dotSpacing,
+            height: dotHeight
+        )
+    }
+
+    private func updateDots() {
+        UIView.animate(withDuration: 0.3) {
+            self.layoutDots()
+        }
+    }
+}
+
+extension AnimatedPageControl {
+    
+    func updateProgress(_ progress: CGFloat) {
+        guard !dots.isEmpty else { return }
+        
+        let baseIndex = currentPage
+        
+        let fractionalPart = progress - CGFloat(baseIndex)
+        
+        for (index, dot) in dots.enumerated() {
+            let isSelected = (index == baseIndex)
+            let isNext = (index == baseIndex + 1)
+            
+            let scale = isSelected ? 1 - fractionalPart : (isNext ? fractionalPart : 0)
+            let width = dotWidth + (selectedDotWidth - dotWidth) * scale
+            let height = dotHeight + (selectedDotHeight - dotHeight) * scale
+            
+            dot.frame.size = CGSize(width: width, height: height)
+            dot.layer.cornerRadius = height / 2
+        }
+        
+        var previousWidth: CGFloat = 0
+        for (index, dot) in dots.enumerated() {
+            dot.frame.origin.x = previousWidth
+            previousWidth += (index == currentPage ? selectedDotWidth : dotWidth) + dotSpacing
+        }
+    }
+}

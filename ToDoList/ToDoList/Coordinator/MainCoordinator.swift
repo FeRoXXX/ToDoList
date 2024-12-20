@@ -6,23 +6,49 @@
 //
 
 import UIKit
+import Combine
 
 final class MainCoordinator: Coordinator {
     
-    var parentCoordinator: Coordinator?
+    //MARK: - Private properties
+    
+    private var bindings: Set<AnyCancellable> = []
+    private var firstOpenService: FirstOpenService
+    
+    //MARK: - Public properties
+    
     var children: [Coordinator] = []
     var navigationController: UINavigationController
     
-    init(navigationController: UINavigationController) {
+    init(navigationController: UINavigationController, firstOpenService: FirstOpenService) {
         self.navigationController = navigationController
+        self.firstOpenService = firstOpenService
     }
     
     func start() {
-        goToAuthentication()
+        if firstOpenService.fetchState() {
+            goToOnboarding()
+        } else {
+            goToAuthentication()
+        }
     }
 }
 
 extension MainCoordinator {
+    
+    func goToOnboarding() {
+        let coordinator = OnBoardingCoordinator(navigationController: navigationController)
+        coordinator.didFinish
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.didFinish(coordinator)
+                self?.firstOpenService.set(isFirstOpen: false)
+                self?.start()
+            }
+            .store(in: &bindings)
+        children.append(coordinator)
+        coordinator.start()
+    }
     
     func goToAuthentication() {
         let coordinator = AuthenticationCoordinator(navigationController: navigationController)

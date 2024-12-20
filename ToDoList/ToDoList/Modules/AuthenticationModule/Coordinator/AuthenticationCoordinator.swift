@@ -6,9 +6,11 @@
 //
 
 import UIKit
+import Combine
 
 final class AuthenticationCoordinator: Coordinator {
-    var parentCoordinator: Coordinator?
+    
+    private var bindings: Set<AnyCancellable> = []
     var children: [Coordinator] = []
     var navigationController: UINavigationController
     
@@ -21,19 +23,30 @@ final class AuthenticationCoordinator: Coordinator {
     }
 }
 
-extension AuthenticationCoordinator: ISignUpCoordinator, ISignInCoordinator {
+extension AuthenticationCoordinator {
     
-    func goToSignInController() {
-        let coordinator = SignInCoordinator(navigationController: navigationController)
-        coordinator.delegate = self
-        children.append(coordinator)
-        coordinator.start()
+    func goToSignInController(_ animated: Bool = true) {
+        let viewModel = SignInViewModel()
+        viewModel.navigateToSignUpPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.goToSignUpController()
+            }
+            .store(in: &bindings)
+        let controller = SignInViewController(viewModel: viewModel)
+        navigationController.setViewControllers([controller], animated: animated)
     }
     
     func goToSignUpController() {
-        let coordinator = SignUpCoordinator(navigationController: navigationController)
-        coordinator.delegate = self
-        children.append(coordinator)
-        coordinator.start()
+        let viewModel = SignUpViewModel()
+        viewModel.navigateToSignInPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.goToSignInController(false)
+            }
+            .store(in: &bindings)
+        
+        let controller = SignUpViewController(viewModel: viewModel)
+        navigationController.setViewControllers([controller], animated: false)
     }
 }
