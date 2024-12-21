@@ -41,7 +41,9 @@ extension Coordinator {
     //MARK: - Did finish coordinator
     
     func removeChild(_ coordinator: Coordinator) {
-        children = children.filter { $0 !== coordinator }
+        if let index = children.firstIndex(of: coordinator) {
+            children.remove(at: index)
+        }
     }
 }
 
