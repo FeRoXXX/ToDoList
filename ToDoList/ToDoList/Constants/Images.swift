@@ -27,4 +27,8 @@ enum Images {
     static let search = UIImage.search
     static let plus = UIImage.plus
     static let logout = UIImage.logout
+    static let profile = UIImage.profile
+    static let conversations = UIImage.conversation
+    static let project = UIImage.projects
+    static let policies = UIImage.policie
 }

@@ -12,6 +12,14 @@ final class SettingsView: UIView {
     
     //MARK: - Private properties
     
+    private var pageTitle: UILabel = {
+        let label = UILabel()
+        label.text = "Settings"
+        label.font = UIFont(name: Fonts.poppinsBold.rawValue, size: 18)
+        label.textColor = Colors.whiteColorFirst
+        return label
+    }()
+    
     private lazy var logoutButton: UIButton = {
         let button = UIButton()
         var configuration = UIButton.Configuration.plain()
@@ -19,8 +27,15 @@ final class SettingsView: UIView {
         configuration.baseForegroundColor = Colors.redColor
         configuration.image = Images.logout
         configuration.title = "Logout"
+        configuration.imagePadding = 12
         button.configuration = configuration
         return button
+    }()
+    
+    private var settingsTableView: SettingsTableView = {
+        let tableView = SettingsTableView(frame: .zero, style: .plain)
+        tableView.backgroundColor = Colors.clearColor
+        return tableView
     }()
     //MARK: - Initialization
     
@@ -32,6 +47,14 @@ final class SettingsView: UIView {
     @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    //MARK: - Layout subviews
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        logoutButton.layer.cornerRadius = logoutButton.frame.height / 2
+        logoutButton.layer.masksToBounds = true
     }
 }
 
@@ -47,10 +70,28 @@ private extension SettingsView {
     }
     
     func addSubviews() {
-        
+        addSubview(settingsTableView)
+        addSubview(logoutButton)
+        addSubview(pageTitle)
     }
     
     func setupConstraints() {
+        
+        pageTitle.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.top.equalToSuperview().inset(75)
+        }
+        settingsTableView.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            make.top.equalTo(pageTitle.snp.bottom).offset(22)
+        }
+        
+        logoutButton.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview().inset(93)
+            make.bottom.equalToSuperview().inset(200)
+            make.top.equalTo(settingsTableView.snp.bottom).offset(95)
+            make.height.equalTo(42)
+        }
         
     }
 }

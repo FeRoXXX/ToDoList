@@ -8,5 +8,6 @@
 import UIKit
 
 struct SettingsTableViewModel {
-    
+    let image: UIImage
+    let title: String
 }

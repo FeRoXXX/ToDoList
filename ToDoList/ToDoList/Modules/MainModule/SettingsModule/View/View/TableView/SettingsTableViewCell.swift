@@ -12,7 +12,31 @@ final class SettingsTableViewCell: UITableViewCell {
     
     //MARK: - Private properties
     
+    private let leftImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFit
+        return imageView
+    }()
     
+    private let titleLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont(name: Fonts.poppinsRegular.rawValue, size: 18)
+        label.textColor = Colors.whiteColorFirst
+        return label
+    }()
+    
+    private let rightImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = Images.arrowRight
+        imageView.contentMode = .scaleAspectFit
+        return imageView
+    }()
+    
+    private let bottomSeparatorView: UIView = {
+        let view = UIView()
+        view.backgroundColor = Colors.whiteColorFirst
+        return view
+    }()
     
     //MARK: - Initialization
     
@@ -39,11 +63,36 @@ private extension SettingsTableViewCell {
     }
     
     func addSubviews() {
-       
+        addSubview(leftImageView)
+        addSubview(titleLabel)
+        addSubview(rightImageView)
+        addSubview(bottomSeparatorView)
     }
     
     func setupConstraints() {
+        leftImageView.snp.makeConstraints { make in
+            make.leading.equalToSuperview().offset(17)
+            make.right.equalTo(titleLabel.snp.left).offset(-10)
+            make.centerY.equalToSuperview()
+            make.height.width.equalTo(30)
+        }
         
+        titleLabel.snp.makeConstraints { make in
+            make.top.bottom.equalToSuperview().inset(17)
+            make.trailing.greaterThanOrEqualTo(rightImageView.snp.leading).inset(10)
+        }
+        
+        rightImageView.snp.makeConstraints { make in
+            make.centerY.equalToSuperview()
+            make.width.height.equalTo(16)
+            make.trailing.equalToSuperview().inset(34)
+        }
+        
+        bottomSeparatorView.snp.makeConstraints { make in
+            make.height.equalTo(1)
+            make.leading.trailing.equalToSuperview()
+            make.bottom.equalToSuperview()
+        }
     }
 }
 
@@ -53,7 +102,8 @@ extension SettingsTableViewCell {
     
     //MARK: - Setup data
     
-    func setupData(_ data: ToDoListModel) {
-        
+    func setupData(_ data: SettingsTableViewModel) {
+        leftImageView.image = data.image
+        titleLabel.text = data.title
     }
 }

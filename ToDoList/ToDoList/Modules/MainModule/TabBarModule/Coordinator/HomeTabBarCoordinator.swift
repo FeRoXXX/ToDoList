@@ -83,7 +83,7 @@ final class HomeTabBarCoordinator: Coordinator {
             coordinator.start()
             return coordinator.navigationController
         case .settings:
-            let coordinator = HomeCoordinator(navigationController: navigationController)
+            let coordinator = SettingsCoordinator(navigationController: navigationController)
             addChildCoordinator(coordinator)
             coordinator.start()
             return coordinator.navigationController
