@@ -70,14 +70,14 @@ final class AuthService {
                 .eraseToAnyPublisher()
         }
         
-        let result = UserService.shared.checkUserExist(by: SignInRequestModel(email: email, password: password))
+        let result = CoreDataService.shared.checkUserExist(by: SignInRequestModel(email: email, password: password))
         switch result {
         case .success(let success):
             if success {
                 return Fail(error: Errors.alreadyExists)
                     .eraseToAnyPublisher()
             } else {
-                let result = UserService.shared.createObject(SignUpRequestModel(email: email,
+                let result = CoreDataService.shared.createObject(SignUpRequestModel(email: email,
                                                                    fullName: fullName,
                                                                    password: password))
                 
@@ -91,7 +91,7 @@ final class AuthService {
                 }
             }
         case .failure(_):
-            let result = UserService.shared.createObject(SignUpRequestModel(email: email,
+            let result = CoreDataService.shared.createObject(SignUpRequestModel(email: email,
                                                                fullName: fullName,
                                                                password: password))
             switch result {
@@ -125,7 +125,7 @@ final class AuthService {
                 .eraseToAnyPublisher()
         }
         
-        let result = UserService.shared.getUserData(by: SignInRequestModel(email: email, password: password))
+        let result = CoreDataService.shared.getUserData(by: SignInRequestModel(email: email, password: password))
         switch result {
         case .success(let success):
             return Result.Publisher(success)

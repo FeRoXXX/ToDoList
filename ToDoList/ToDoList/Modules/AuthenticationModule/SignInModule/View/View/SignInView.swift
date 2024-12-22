@@ -42,19 +42,21 @@ final class SignInView: UIView {
         return stackView
     }()
     
-    private var emailTextField: TextFieldWithLeftImage = {
-        let textField = TextFieldWithLeftImage()
-        textField.addImage(.email)
-        textField.backgroundColor = .white
+    private var emailTextField: CustomTextField = {
+        let textField = CustomTextField()
+        textField.addImage(Images.email, imageDirection: .left)
+        textField.attributesForPlaceholder = [.font: UIFont(name: Fonts.poppinsRegular.rawValue, size: 18) ?? .systemFont(ofSize: 18), .foregroundColor: Colors.blackColorThird]
+        textField.backgroundColor = Colors.whiteColorFirst
         textField.layer.cornerRadius = 5
         textField.layer.masksToBounds = true
         return textField
     }()
     
-    private var passwordTextField: TextFieldWithLeftImage = {
-        let textField = TextFieldWithLeftImage()
-        textField.addImage(.password)
-        textField.backgroundColor = .white
+    private var passwordTextField: CustomTextField = {
+        let textField = CustomTextField()
+        textField.addImage(Images.password, imageDirection: .left)
+        textField.attributesForPlaceholder = [.font: UIFont(name: Fonts.poppinsRegular.rawValue, size: 18) ?? .systemFont(ofSize: 18), .foregroundColor: Colors.blackColorThird]
+        textField.backgroundColor = Colors.whiteColorFirst
         textField.layer.cornerRadius = 5
         textField.layer.masksToBounds = true
         return textField
@@ -169,8 +171,8 @@ extension SignInView {
     func setupStaticText(_ data: SignInStaticText) {
         titleLabel.attributedText = data.title
         supportLabel.text = data.support
-        emailTextField.placeholder = data.emailPlaceholder
-        passwordTextField.placeholder = data.passwordPlaceholder
+        emailTextField.addAttributedPlaceholder(data.emailPlaceholder)
+        passwordTextField.addAttributedPlaceholder(data.passwordPlaceholder)
         signInButton.configuration?.title = data.signInButtonTitle
         anyAuthenticationMethod.attributedText = data.additionalInfo
         anyAuthenticationMethod.addRangeGesture(stringRange: "sign up") { [weak self] in

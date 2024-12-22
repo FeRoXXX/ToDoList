@@ -41,27 +41,30 @@ final class SignUpView: UIView {
         return stackView
     }()
     
-    private var fullNameTextField: TextFieldWithLeftImage = {
-        let textField = TextFieldWithLeftImage()
-        textField.addImage(UIImage(named: "fullName"))
+    private var fullNameTextField: CustomTextField = {
+        let textField = CustomTextField()
+        textField.addImage(Images.fullName, imageDirection: .left)
+        textField.attributesForPlaceholder = [.font: UIFont(name: Fonts.poppinsRegular.rawValue, size: 18) ?? .systemFont(ofSize: 18), .foregroundColor: Colors.blackColorThird]
         textField.backgroundColor = .white
         textField.layer.cornerRadius = 5
         textField.layer.masksToBounds = true
         return textField
     }()
     
-    private var emailTextField: TextFieldWithLeftImage = {
-        let textField = TextFieldWithLeftImage()
-        textField.addImage(.email)
+    private var emailTextField: CustomTextField = {
+        let textField = CustomTextField()
+        textField.addImage(Images.email, imageDirection: .left)
+        textField.attributesForPlaceholder = [.font: UIFont(name: Fonts.poppinsRegular.rawValue, size: 18) ?? .systemFont(ofSize: 18), .foregroundColor: Colors.blackColorThird]
         textField.backgroundColor = .white
         textField.layer.cornerRadius = 5
         textField.layer.masksToBounds = true
         return textField
     }()
     
-    private var passwordTextField: TextFieldWithLeftImage = {
-        let textField = TextFieldWithLeftImage()
-        textField.addImage(.password)
+    private var passwordTextField: CustomTextField = {
+        let textField = CustomTextField()
+        textField.addImage(Images.password, imageDirection: .left)
+        textField.attributesForPlaceholder = [.font: UIFont(name: Fonts.poppinsRegular.rawValue, size: 18) ?? .systemFont(ofSize: 18), .foregroundColor: Colors.blackColorThird]
         textField.backgroundColor = .white
         textField.layer.cornerRadius = 5
         textField.layer.masksToBounds = true
@@ -186,9 +189,9 @@ extension SignUpView {
     func setupConstants(_ data: SignUpStaticText) {
         titleLabel.attributedText = data.title
         supportLabel.text = data.support
-        emailTextField.placeholder = data.emailPlaceholder
-        fullNameTextField.placeholder = data.fullNamePlaceholder
-        passwordTextField.placeholder = data.passwordPlaceholder
+        emailTextField.addAttributedPlaceholder(data.emailPlaceholder)
+        fullNameTextField.addAttributedPlaceholder(data.fullNamePlaceholder)
+        passwordTextField.addAttributedPlaceholder(data.passwordPlaceholder)
         signUpButton.configuration?.title = data.signUpButtonTitle
         anyAuthenticationMethod.attributedText = data.additionalInfo
         anyAuthenticationMethod.addRangeGesture(stringRange: "sign in") { [weak self] in

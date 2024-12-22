@@ -23,7 +23,7 @@ final class OnBoardingView: UIView {
         label.textColor = .white
         label.numberOfLines = 0
         label.textAlignment = .center
-        label.font = .init(name: "Poppins-medium", size: 20)
+        label.font = .init(name: Fonts.poppinsMedium.rawValue, size: 20)
         return label
     }()
     
@@ -84,7 +84,7 @@ extension OnBoardingView {
     //MARK: - Setup static elements
     
     func setupStaticElement(_ data: OnBoardingStaticElements) {
-        pageImageView.image = UIImage(named: data.imageName)
+        pageImageView.image = data.image
         pageTextLabel.text = data.description
     }
 }

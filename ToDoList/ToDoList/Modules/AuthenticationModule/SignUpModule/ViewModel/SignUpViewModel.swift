@@ -24,6 +24,7 @@ final class SignUpViewModel {
     
     private(set) var pushStaticTextPublisher: PassthroughSubject<SignUpStaticText, Never> = .init()
     private(set) var navigateToSignInPublisher: PassthroughSubject<Void, Never> = .init()
+    private(set) var navigateToHomePublisher: PassthroughSubject<AuthModel, Never> = .init()
     private(set) var showErrorPublisher: PassthroughSubject<String, Never> = .init()
     private var bindings: Set<AnyCancellable> = []
     
@@ -40,16 +41,16 @@ private extension SignUpViewModel {
     
     func prepareConstants() {
         pushStaticTextPublisher.send(SignUpStaticText(title: Constants.title.rawValue.toAttributedString(highlighting: "DO IT",
-                                                                                                         defaultFont: .init(name: "Poppins-Medium", size: 25),
-                                                                                                         highlightedFont: .init(name: "DarumadropOne-Regular", size: 25)),
+                                                                                                         defaultFont: .init(name: Fonts.poppinsMedium.rawValue, size: 25),
+                                                                                                         highlightedFont: .init(name: Fonts.darumaDropOne.rawValue, size: 25)),
                                                       support: Constants.support.rawValue,
                                                       fullNamePlaceholder: Constants.fullNamePlaceholder.rawValue,
                                                       emailPlaceholder: Constants.emailPlaceholder.rawValue,
                                                       passwordPlaceholder: Constants.passwordPlaceholder.rawValue,
                                                       signUpButtonTitle: Constants.signUpButtonTitle.rawValue,
                                                       additionalInfo: Constants.additionalInfo.rawValue.toAttributedString(highlighting: "sign in",
-                                                                                                                           defaultFont: .init(name: "Poppins-Medium", size: 14),
-                                                                                                                           highlightedFont: .init(name: "Poppins-Medium", size: 14),
+                                                                                                                           defaultFont: .init(name: Fonts.poppinsMedium.rawValue, size: 14),
+                                                                                                                           highlightedFont: .init(name: Fonts.poppinsMedium.rawValue, size: 14),
                                                                                                                            link: URL(string: ""),
                                                                                                                            alignment: .center,
                                                                                                                            additionalColor: #colorLiteral(red: 0.3882352941, green: 0.8509803922, blue: 0.9529411765, alpha: 1))))
@@ -86,8 +87,8 @@ extension SignUpViewModel {
                 case .finished:
                     break
                 }
-            } receiveValue: { value in
-                
+            } receiveValue: { [weak self] value in
+                self?.navigateToHomePublisher.send(value)
             }
             .store(in: &bindings)
 

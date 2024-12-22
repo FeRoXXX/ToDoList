@@ -33,7 +33,7 @@ final class OnBoardingMainViewController: UIPageViewController {
         let button = UIButton()
         var configuration = UIButton.Configuration.plain()
         configuration.background.backgroundColor = .white
-        configuration.image = UIImage(systemName: "arrow.right")
+        configuration.image = Images.systemArrowRight
         button.configuration = configuration
         button.tintColor = .black
         button.addTarget(self, action: #selector(nextButtonClicked), for: .touchUpInside)

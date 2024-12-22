@@ -42,13 +42,25 @@ extension MainCoordinator {
                 self?.bindings.removeAll()
             }
             .store(in: &bindings)
-        children.append(coordinator)
+        addChildCoordinator(coordinator)
         coordinator.start()
     }
     
     func goToAuthentication() {
         let coordinator = AuthenticationCoordinator(navigationController: navigationController)
-        children.append(coordinator)
+        coordinator.finishAuthenticationPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.goToHome()
+            }
+            .store(in: &bindings)
+        addChildCoordinator(coordinator)
+        coordinator.start()
+    }
+    
+    func goToHome() {
+        let coordinator = HomeTabBarCoordinator(navigationController: navigationController)
+        addChildCoordinator(coordinator)
         coordinator.start()
     }
 }

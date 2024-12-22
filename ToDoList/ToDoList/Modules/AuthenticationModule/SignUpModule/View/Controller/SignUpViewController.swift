@@ -66,7 +66,7 @@ private extension SignUpViewController {
                 }
                 .store(in: &bindings)
             contentView.signUpDidTapped
-                .receive(on: DispatchQueue.global())
+                .receive(on: DispatchQueue.main)
                 .sink { [weak self] value in
                     self?.viewModel.checkAuthData(value.fullName, value.email, value.password)
                 }

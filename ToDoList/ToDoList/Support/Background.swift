@@ -16,13 +16,18 @@ final class Background {
     //MARK: - Private properties
     
     private var gradientLayer: CAGradientLayer {
-        let colorTop = #colorLiteral(red: 0.07058823529, green: 0.3254901961, blue: 0.6666666667, alpha: 1).cgColor
-        let colorBottom = #colorLiteral(red: 0.01960784314, green: 0.1411764706, blue: 0.2431372549, alpha: 1).cgColor
-        
         let gradient = CAGradientLayer()
         gradient.colors = [colorTop, colorBottom]
         gradient.locations = [0.0, 1.0]
         return gradient
+    }
+    
+    private var colorTop: CGColor {
+        return #colorLiteral(red: 0.07058823529, green: 0.3254901961, blue: 0.6666666667, alpha: 1).cgColor
+    }
+    
+    private var colorBottom: CGColor {
+        return #colorLiteral(red: 0.01960784314, green: 0.1411764706, blue: 0.2431372549, alpha: 1).cgColor
     }
     
     //MARK: - Initialization

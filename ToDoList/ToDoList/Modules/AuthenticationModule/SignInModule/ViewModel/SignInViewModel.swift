@@ -23,6 +23,7 @@ final class SignInViewModel {
     
     private(set) var pushStaticTextPublisher: PassthroughSubject<SignInStaticText, Never> = .init()
     private(set) var navigateToSignUpPublisher: PassthroughSubject<Void, Never> = .init()
+    private(set) var navigateToHomePublisher: PassthroughSubject<AuthModel, Never> = .init()
     private(set) var showErrorPublisher: PassthroughSubject<String, Never> = .init()
     private var bindings: Set<AnyCancellable> = []
     
@@ -40,15 +41,15 @@ private extension SignInViewModel {
     func prepareConstants() {
         pushStaticTextPublisher
             .send(SignInStaticText(title: Constants.title.rawValue.toAttributedString(highlighting: "DO IT",
-                                                                                      defaultFont: .init(name: "Poppins-Medium", size: 25),
-                                                                                      highlightedFont: .init(name: "DarumadropOne-Regular", size: 25)),
+                                                                                      defaultFont: .init(name: Fonts.poppinsMedium.rawValue, size: 25),
+                                                                                      highlightedFont: .init(name: Fonts.darumaDropOne.rawValue, size: 25)),
                                    support: Constants.support.rawValue,
                                    emailPlaceholder: Constants.emailPlaceholder.rawValue,
                                    passwordPlaceholder: Constants.passwordPlaceholder.rawValue,
                                    signInButtonTitle: Constants.signUpButtonTitle.rawValue,
                                    additionalInfo: Constants.additionalInfo.rawValue.toAttributedString(highlighting: "sign up",
-                                                                                                        defaultFont: .init(name: "Poppins-Medium", size: 14),
-                                                                                                        highlightedFont: .init(name: "Poppins-Medium", size: 14),
+                                                                                                        defaultFont: .init(name: Fonts.poppinsMedium.rawValue, size: 14),
+                                                                                                        highlightedFont: .init(name: Fonts.poppinsMedium.rawValue, size: 14),
                                                                                                         alignment: .center,
                                                                                                         additionalColor: #colorLiteral(red: 0.3882352941, green: 0.8509803922, blue: 0.9529411765, alpha: 1))))
     }
@@ -82,14 +83,14 @@ extension SignInViewModel {
                 case .failure(let value):
                     if let value = value as? AuthService.Errors {
                         self?.showErrorPublisher.send(value.message)
-                    } else if let value = value as? UserService.Errors {
+                    } else if let value = value as? CoreDataService.Errors {
                         self?.showErrorPublisher.send(value.message)
                     }
                 case .finished:
                     break
                 }
-            } receiveValue: { _ in
-                
+            } receiveValue: { [weak self] value in
+                self?.navigateToHomePublisher.send(value)
             }
             .store(in: &bindings)
     }

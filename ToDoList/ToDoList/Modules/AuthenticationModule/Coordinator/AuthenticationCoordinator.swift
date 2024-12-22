@@ -11,6 +11,7 @@ import Combine
 final class AuthenticationCoordinator: Coordinator {
     
     private var bindings: Set<AnyCancellable> = []
+    private(set) var finishAuthenticationPublisher: PassthroughSubject<Void, Never> = .init()
     
     override init(navigationController: UINavigationController) {
         super.init(navigationController: navigationController)
@@ -31,6 +32,13 @@ extension AuthenticationCoordinator {
                 self?.goToSignUpController()
             }
             .store(in: &bindings)
+        
+        viewModel.navigateToHomePublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] value in
+                self?.finishAuthenticationPublisher.send()
+            }
+            .store(in: &bindings)
         let controller = SignInViewController(viewModel: viewModel)
         navigationController.setViewControllers([controller], animated: animated)
     }
@@ -41,6 +49,13 @@ extension AuthenticationCoordinator {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 self?.goToSignInController(false)
+            }
+            .store(in: &bindings)
+        
+        viewModel.navigateToHomePublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] value in
+                self?.finishAuthenticationPublisher.send()
             }
             .store(in: &bindings)
         

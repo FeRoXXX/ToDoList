@@ -5,9 +5,9 @@
 //  Created by Александр Федоткин on 19.12.2024.
 //
 
-import Foundation
+import UIKit
 
 struct OnBoardingStaticElements {
-    var imageName: String
+    var image: UIImage
     var description: String
 }

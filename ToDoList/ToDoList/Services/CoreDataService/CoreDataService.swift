@@ -1,5 +1,5 @@
 //
-//  UserService.swift
+//  CoreDataService.swift
 //  ToDoList
 //
 //  Created by Александр Федоткин on 20.12.2024.
@@ -9,7 +9,7 @@ import UIKit
 import CoreData
 import Combine
 
-final class UserService {
+final class CoreDataService {
     
     enum Errors: Error {
         case dataBaseError
@@ -31,7 +31,7 @@ final class UserService {
         }
     }
     
-    static let shared = UserService()
+    static let shared = CoreDataService()
     
     private var appDelegate: AppDelegate {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { fatalError() }
@@ -39,13 +39,11 @@ final class UserService {
     }
     
     private var context: NSManagedObjectContext {
-        return DispatchQueue.main.sync {
-                return appDelegate.persistentContainer.viewContext
-            }
+        return appDelegate.persistentContainer.viewContext
     }
 }
 
-extension UserService {
+extension CoreDataService {
     
     //MARK: - Create object method
     

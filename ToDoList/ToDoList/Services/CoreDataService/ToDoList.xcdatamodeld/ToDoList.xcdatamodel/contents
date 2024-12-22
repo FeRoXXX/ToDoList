@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="23231" systemVersion="24B91" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
+    <entity name="AuthModel" representedClassName="AuthModel" syncable="YES">
+        <attribute name="email" attributeType="String"/>
+        <attribute name="fullName" attributeType="String"/>
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="password" attributeType="String" allowsCloudEncryption="YES"/>
+        <relationship name="relationship" toMany="YES" deletionRule="Cascade" destinationEntity="UserModel" inverseName="relationship" inverseEntity="UserModel"/>
+    </entity>
+    <entity name="UserModel" representedClassName=".UserModel" syncable="YES">
+        <attribute name="endDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="isDone" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="noteDescription" optional="YES" attributeType="String"/>
+        <attribute name="title" optional="YES" attributeType="String"/>
+        <relationship name="relationship" maxCount="1" deletionRule="Cascade" destinationEntity="AuthModel" inverseName="relationship" inverseEntity="AuthModel"/>
+    </entity>
+</model>

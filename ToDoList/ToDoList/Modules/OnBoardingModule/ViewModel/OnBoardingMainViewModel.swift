@@ -11,13 +11,9 @@ import Combine
 final class OnBoardingMainViewModel {
     
     enum Constants: String {
-        case firstPageImage
         case firstPageDescription = "Plan your tasks to do, that way you’ll stay organized and you won’t skip any"
-        case secondPageImage
         case secondPageDescription = "Make a full schedule for the whole week and stay organized and productive all days"
-        case thirdPageImage
         case thirdPageDescription = "create a team task, invite people and manage your work together"
-        case fourthPageImage
         case fourthPageDescription = "You informations are secure with us"
     }
     
@@ -48,10 +44,10 @@ extension OnBoardingMainViewModel {
     
     func initializeStaticData() {
         staticData = [
-            OnBoardingStaticElements(imageName: Constants.firstPageImage.rawValue, description: Constants.firstPageDescription.rawValue),
-            OnBoardingStaticElements(imageName: Constants.secondPageImage.rawValue, description: Constants.secondPageDescription.rawValue),
-            OnBoardingStaticElements(imageName: Constants.thirdPageImage.rawValue, description: Constants.thirdPageDescription.rawValue),
-            OnBoardingStaticElements(imageName: Constants.fourthPageImage.rawValue, description: Constants.fourthPageDescription.rawValue),
+            OnBoardingStaticElements(image: Images.firstPageImage, description: Constants.firstPageDescription.rawValue),
+            OnBoardingStaticElements(image: Images.secondPageImage, description: Constants.secondPageDescription.rawValue),
+            OnBoardingStaticElements(image: Images.thirdPageImage, description: Constants.thirdPageDescription.rawValue),
+            OnBoardingStaticElements(image: Images.fourthPageImage, description: Constants.fourthPageDescription.rawValue),
         ]
         staticDataPublisher.send(staticData)
     }
