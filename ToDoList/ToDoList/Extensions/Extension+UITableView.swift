@@ -22,7 +22,7 @@ extension UITableView {
         return cell
     }
     
-    //MARK: - Calculate index paths
+    //MARK: - Calculate index paths for [[]] array
     
     private func calculateIndexPaths<T: Equatable>(oldValue: [[T]], value: [[T]]) -> (inserted: [IndexPath], deleted: [IndexPath], updated: [IndexPath]) {
         var inserted: [IndexPath] = []
@@ -86,4 +86,59 @@ extension UITableView {
         }
         self.endUpdates()
     }
+    
+    //MARK: - Calculate index paths for [] array
+    
+    private func calculateIndexPaths<T: Equatable>(oldValue: [T], value: [T]) -> (inserted: [IndexPath], deleted: [IndexPath], updated: [IndexPath]) {
+        var inserted: [IndexPath] = []
+        var deleted: [IndexPath] = []
+        var updated: [IndexPath] = []
+        
+        let oldDataMap = oldValue.enumerated().map { (IndexPath(row: $0.offset, section: 0), $0.element) }
+        let newDataMap = value.enumerated().map { (IndexPath(row: $0.offset, section: 0), $0.element) }
+        
+        let oldIndexPaths = Set(oldDataMap.map { $0.0 })
+        let newIndexPaths = Set(newDataMap.map { $0.0 })
+        
+        deleted = Array(oldIndexPaths.subtracting(newIndexPaths))
+        
+        inserted = Array(newIndexPaths.subtracting(oldIndexPaths))
+        
+        let oldModelMap = Dictionary(uniqueKeysWithValues: oldDataMap)
+        let newModelMap = Dictionary(uniqueKeysWithValues: newDataMap)
+        
+        for (indexPath, oldModel) in oldModelMap {
+            guard let newModel = newModelMap[indexPath] else {
+                continue
+            }
+            if oldModel != newModel {
+                updated.append(indexPath)
+            }
+        }
+        
+        return (inserted: inserted, deleted: deleted, updated: updated)
+    }
+
+    // MARK: - Update table view
+
+    func updateIndexPaths<T: Equatable>(oldValue: [T], data: [T]) {
+        let indexPaths = calculateIndexPaths(oldValue: oldValue, value: data)
+        
+        self.beginUpdates()
+        
+        if !indexPaths.inserted.isEmpty {
+            self.insertRows(at: indexPaths.inserted, with: .automatic)
+        }
+        
+        if !indexPaths.deleted.isEmpty {
+            self.deleteRows(at: indexPaths.deleted, with: .automatic)
+        }
+        
+        if !indexPaths.updated.isEmpty {
+            self.reloadRows(at: indexPaths.updated, with: .automatic)
+        }
+        
+        self.endUpdates()
+    }
+
 }

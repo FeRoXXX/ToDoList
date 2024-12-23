@@ -11,10 +11,11 @@ final class ToDoListTableView: UITableView {
     
     //MARK: - Private properties
     
-    private var data: [ToDoListModel] = [
-        .init(title: "Client meeting", date: "Tomorrow | 10:30pm", isComplete: false),
-        .init(title: "Client meeting", date: "Tomorrow | 10:30pm", isComplete: false),
-    ]
+    var data: [ToDoListModel] = [] {
+        didSet {
+            updateIndexPaths(oldValue: oldValue, data: data)
+        }
+    }
     
     //MARK: - Initialization
     

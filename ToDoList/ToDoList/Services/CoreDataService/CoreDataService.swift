@@ -98,6 +98,23 @@ extension CoreDataService {
         }
     }
     
+    func getSortedIncompleteTasks(by userId: UUID) -> Result<[UserModel], Error> {
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "UserModel")
+        let relationshipPredicate = NSPredicate(format: "relationship.id = %@", userId as CVarArg)
+        let incompletePredicate = NSPredicate(format: "isDone = %@", false)
+        fetchRequest.predicate = relationshipPredicate
+        
+        let sortDescriptor = NSSortDescriptor(key: "endDate", ascending: true)
+        fetchRequest.sortDescriptors = [sortDescriptor]
+        
+        do {
+            let data = (try context.fetch(fetchRequest) as? [UserModel]) ?? []
+            return .success(data)
+        } catch {
+            return .failure(Errors.badDecode)
+        }
+    }
+    
     //MARK: - Check user already sign up
     
     func checkUserExist(by data: SignInRequestModel) -> Result<Bool, Error> {

@@ -55,7 +55,6 @@ extension AuthenticationCoordinator {
         viewModel.navigateToHomePublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] value in
-                print(self?.finishAuthenticationPublisher)
                 self?.finishAuthenticationPublisher.send(value)
             }
             .store(in: &bindings)

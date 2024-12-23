@@ -22,6 +22,7 @@ final class ToDoListViewController: UIViewController {
         super.viewDidLoad()
         setupUI()
         bind()
+        viewModel.loadData()
     }
     
     //MARK: - Initialization
@@ -57,7 +58,7 @@ private extension ToDoListViewController {
             contentView.addButtonDidTappedPublisher
                 .receive(on: DispatchQueue.main)
                 .sink { [weak self] _ in
-                    self?.viewModel.navigateToAddToDoItem()
+                    self?.viewModel.navigateToAddNewTask()
                 }
                 .store(in: &bindings)
         }
@@ -66,6 +67,12 @@ private extension ToDoListViewController {
         
         func bindViewModelToView() {
             
+            viewModel.pushTableViewData
+                .receive(on: DispatchQueue.main)
+                .sink { [weak self] value in
+                    self?.contentView.tableView.data = value
+                }
+                .store(in: &bindings)
         }
         
         bindViewModelToView()

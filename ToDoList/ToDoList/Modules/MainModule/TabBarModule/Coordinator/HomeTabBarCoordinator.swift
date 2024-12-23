@@ -56,7 +56,7 @@ final class HomeTabBarCoordinator: Coordinator {
             coordinator.start()
             return coordinator.navigationController
         case .toDoList:
-            let coordinator = ToDoListCoordinator(navigationController: navigationController)
+            let coordinator = ToDoListCoordinator(navigationController: navigationController, authenticationKey: authenticationData, profileDataService: ProfileDataService.shared)
             addChildCoordinator(coordinator)
             coordinator.start()
             return coordinator.navigationController

@@ -39,7 +39,9 @@ final class ToDoListView: UIView {
         return button
     }()
     
-    private var tableView: ToDoListTableView = {
+    //MARK: - Public properties
+    
+    var tableView: ToDoListTableView = {
         let tableView = ToDoListTableView(frame: .zero, style: .grouped)
         tableView.backgroundColor = .clear
         return tableView

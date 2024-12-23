@@ -55,7 +55,7 @@ final class NewNoteInputView: UIView {
         return stackView
     }()
     
-    var dateTextField: CustomTextField = {
+    lazy var dateTextField: CustomTextField = {
         let textField = CustomTextField()
         textField.addImage(Images.taskDate, imageDirection: .left)
         textField.attributesForPlaceholder = [.font: UIFont(name: Fonts.poppinsRegular.rawValue, size: 16) ?? .systemFont(ofSize: 16), .foregroundColor: Colors.whiteColorSecond]
@@ -64,10 +64,11 @@ final class NewNoteInputView: UIView {
         textField.textColor = Colors.whiteColorFirst
         textField.layer.cornerRadius = 5
         textField.layer.masksToBounds = true
+        textField.setInputViewDatePicker(target: self, selector: #selector(dateTextFieldDoneTapped), type: .date)
         return textField
     }()
     
-    var timeTextField: CustomTextField = {
+    lazy var timeTextField: CustomTextField = {
         let textField = CustomTextField()
         textField.addImage(Images.taskTime, imageDirection: .left)
         textField.attributesForPlaceholder = [.font: UIFont(name: Fonts.poppinsRegular.rawValue, size: 16) ?? .systemFont(ofSize: 16), .foregroundColor: Colors.whiteColorSecond]
@@ -76,6 +77,7 @@ final class NewNoteInputView: UIView {
         textField.textColor = Colors.whiteColorFirst
         textField.layer.cornerRadius = 5
         textField.layer.masksToBounds = true
+        textField.setInputViewDatePicker(target: self, selector: #selector(timeTextFieldDoneTapped), type: .time)
         return textField
     }()
     
@@ -165,5 +167,27 @@ private extension NewNoteInputView {
             make.bottom.equalToSuperview().inset(25)
             make.top.equalTo(horizontalStackViewForTextFields.snp.bottom).offset(20)
         }
+    }
+    
+    @objc func dateTextFieldDoneTapped() {
+        if let datePicker = self.dateTextField.inputView as? UIDatePicker,
+           datePicker.datePickerMode == .date {
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateStyle = .medium
+            dateFormatter.dateFormat = "MM/yyyy"
+            self.dateTextField.attributedText = NSAttributedString(string: dateFormatter.string(from: datePicker.date), attributes: [.font: UIFont(name: Fonts.poppinsRegular.rawValue, size: 16) ?? .systemFont(ofSize: 16), .foregroundColor: Colors.whiteColorSecond])
+        }
+        self.resignFirstResponder()
+    }
+    
+    @objc func timeTextFieldDoneTapped() {
+        if let datePicker = self.timeTextField.inputView as? UIDatePicker,
+           datePicker.datePickerMode == .time {
+            let dateFormatter = DateFormatter()
+            dateFormatter.timeStyle = .medium
+            dateFormatter.dateFormat = "HH:MM"
+            self.timeTextField.attributedText = NSAttributedString(string: dateFormatter.string(from: datePicker.date), attributes: [.font: UIFont(name: Fonts.poppinsRegular.rawValue, size: 16) ?? .systemFont(ofSize: 16), .foregroundColor: Colors.whiteColorSecond])
+        }
+        self.resignFirstResponder()
     }
 }

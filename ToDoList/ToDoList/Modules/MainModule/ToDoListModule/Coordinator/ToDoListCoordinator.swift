@@ -12,19 +12,23 @@ final class ToDoListCoordinator: Coordinator {
     
     //MARK: - Private properties
     
+    private var authenticationKey: UUID
+    private var profileDataService: ProfileDataService
     private var bindings: Set<AnyCancellable> = []
     
     //MARK: - Initialization
     
-    override init(navigationController: UINavigationController) {
+    init(navigationController: UINavigationController, authenticationKey: UUID, profileDataService: ProfileDataService) {
+        self.authenticationKey = authenticationKey
+        self.profileDataService = profileDataService
         super.init(navigationController: navigationController)
     }
     
     //MARK: - Override functions
     
     override func start() {
-        let viewModel = ToDoListViewModel()
-        viewModel.navigateToAddItem
+        let viewModel = ToDoListViewModel(userId: authenticationKey, profileDataService: profileDataService)
+        viewModel.navigateToAddNew
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 self?.routeToAddItem()

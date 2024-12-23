@@ -85,4 +85,17 @@ final class ProfileDataService {
         return Result.Publisher(result)
             .eraseToAnyPublisher()
     }
+    
+    func getUserIncompleteTasks(userId: UUID) -> AnyPublisher<[UserModel], Error> {
+        let result = CoreDataService.shared.getSortedIncompleteTasks(by: userId)
+        
+        switch result {
+        case .success(let success):
+            return Result.Publisher(success)
+                .eraseToAnyPublisher()
+        case .failure(let failure):
+            return Result.Publisher(failure)
+                .eraseToAnyPublisher()
+        }
+    }
 }
