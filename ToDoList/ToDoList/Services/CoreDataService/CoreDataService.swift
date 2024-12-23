@@ -47,7 +47,7 @@ extension CoreDataService {
     
     //MARK: - Create object method
     
-    func createObject(_ data: SignUpRequestModel) -> Result<AuthModel, Error> {
+    func createObject(_ data: SignUpRequestModel) -> Result<UUID, Error> {
         defer {
             appDelegate.saveContext()
         }
@@ -61,7 +61,7 @@ extension CoreDataService {
         user.password = data.password
         user.fullName = data.fullName
         
-        return .success(user)
+        return .success(user.id)
     }
     
     //MARK: - Check user already sign up
@@ -86,7 +86,7 @@ extension CoreDataService {
     
     //MARK: - Get user by sign in data
     
-    func getUserData(by data: SignInRequestModel) -> Result<AuthModel, Error> {
+    func getUserID(by data: SignInRequestModel) -> Result<UUID, Error> {
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "AuthModel")
         let emailPredicate = NSPredicate(format: "email = %@", data.email)
         let passwordPredicate = NSPredicate(format: "password = %@", data.password)
@@ -94,6 +94,26 @@ extension CoreDataService {
         fetchRequest.predicate = andPredicate
         do {
             let data = (try context.fetch(fetchRequest) as? [AuthModel]) ?? []
+            guard let data = data.first else {
+                return .failure(Errors.doesNotExist)
+            }
+            return .success(data.id)
+        } catch {
+            return .failure(Errors.badDecode)
+        }
+    }
+    
+    //MARK: - Get email and fullName
+    
+    func getUserPublicData(by id: UUID) -> Result<UserPublicDataModel, Error> {
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "AuthModel")
+        let emailPredicate = NSPredicate(format: "id = %@", id.uuidString)
+        
+        fetchRequest.predicate = emailPredicate
+        fetchRequest.propertiesToFetch = ["email", "fullName"]
+        
+        do {
+            let data = (try context.fetch(fetchRequest) as? [UserPublicDataModel]) ?? []
             guard let data = data.first else {
                 return .failure(Errors.doesNotExist)
             }

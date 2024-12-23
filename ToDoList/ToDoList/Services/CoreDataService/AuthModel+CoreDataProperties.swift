@@ -16,10 +16,10 @@ extension AuthModel {
         return NSFetchRequest<AuthModel>(entityName: "AuthModel")
     }
 
-    @NSManaged public var email: String?
-    @NSManaged public var fullName: String?
-    @NSManaged public var id: UUID?
-    @NSManaged public var password: String?
+    @NSManaged public var email: String
+    @NSManaged public var fullName: String
+    @NSManaged public var id: UUID
+    @NSManaged public var password: String
     @NSManaged public var relationship: NSSet?
 
 }

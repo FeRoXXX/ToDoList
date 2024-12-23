@@ -43,7 +43,7 @@ final class AuthService {
     
     //MARK: - Sign up
     
-    func signUp(_ data: SignUpModel) -> AnyPublisher<AuthModel, Error> {
+    func signUp(_ data: SignUpModel) -> AnyPublisher<UUID, Error> {
         guard let fullName = data.fullName,
               let email = data.email,
               let password = data.password,
@@ -86,7 +86,7 @@ final class AuthService {
                     return Result.Publisher(success)
                         .eraseToAnyPublisher()
                 case .failure(let failure):
-                    return Fail(error: failure)
+                    return Result.Publisher(failure)
                         .eraseToAnyPublisher()
                 }
             }
@@ -105,7 +105,7 @@ final class AuthService {
         }
     }
     
-    func signIn(_ data: SignInModel) -> AnyPublisher<AuthModel, Error> {
+    func signIn(_ data: SignInModel) -> AnyPublisher<UUID, Error> {
         guard let email = data.email,
               let password = data.password,
               !email.isEmpty,
@@ -125,7 +125,7 @@ final class AuthService {
                 .eraseToAnyPublisher()
         }
         
-        let result = CoreDataService.shared.getUserData(by: SignInRequestModel(email: email, password: password))
+        let result = CoreDataService.shared.getUserID(by: SignInRequestModel(email: email, password: password))
         switch result {
         case .success(let success):
             return Result.Publisher(success)

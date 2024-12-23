@@ -12,11 +12,13 @@ final class HomeTabBarCoordinator: Coordinator {
     
     //MARK: - Private properties
     
-    private var tabBarController: UITabBarController = UITabBarController()
+    private var tabBarController: HomeTabBarController = HomeTabBarController()
+    private var authenticationData: UUID
     
     //MARK: - Initialization
     
-    override init(navigationController: UINavigationController) {
+    init(navigationController: UINavigationController, authenticationData: UUID) {
+        self.authenticationData = authenticationData
         super.init(navigationController: navigationController)
     }
     
@@ -35,27 +37,7 @@ final class HomeTabBarCoordinator: Coordinator {
     
     func prepareTabBarController(with controllers: [UINavigationController]) {
         tabBarController.setViewControllers(controllers, animated: true)
-        let tabBarAppearance = UITabBarAppearance()
-        tabBarAppearance.configureWithOpaqueBackground()
-        tabBarAppearance.backgroundColor = Colors.clearColor
-
-        tabBarAppearance.stackedLayoutAppearance.selected.iconColor = #colorLiteral(red: 0.2392156869, green: 0.6745098233, blue: 0.9686274529, alpha: 1)
-        tabBarAppearance.stackedLayoutAppearance.selected.titleTextAttributes = [
-            .foregroundColor: #colorLiteral(red: 0.2392156869, green: 0.6745098233, blue: 0.9686274529, alpha: 1)
-        ]
-
-        tabBarAppearance.stackedLayoutAppearance.normal.iconColor = UIColor.white
-        tabBarAppearance.stackedLayoutAppearance.normal.titleTextAttributes = [
-            .foregroundColor: UIColor.white
-        ]
-        
-        tabBarController.view.backgroundColor = Colors.clearColor
-        tabBarController.tabBar.standardAppearance = tabBarAppearance
-        if #available(iOS 15.0, *) {
-            tabBarController.tabBar.scrollEdgeAppearance = tabBarAppearance
-        }
         tabBarController.selectedIndex = TabBarPages.home.pageNumber()
-        tabBarController.tabBar.isTranslucent = false
         navigationController.viewControllers = [tabBarController]
     }
     

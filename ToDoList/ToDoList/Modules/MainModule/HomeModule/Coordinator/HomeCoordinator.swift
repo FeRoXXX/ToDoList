@@ -10,9 +10,16 @@ import Combine
 
 final class HomeCoordinator: Coordinator {
     
+    //MARK: - Private properties
+    
+    private let authenticationKey: UUID
+    private let authenticationService: AuthService
+    
     //MARK: - Initialization
     
-    override init(navigationController: UINavigationController) {
+    init(navigationController: UINavigationController, authenticationKey: UUID, authenticationService: AuthService) {
+        self.authenticationService = authenticationService
+        self.authenticationKey = authenticationKey
         super.init(navigationController: navigationController)
     }
     

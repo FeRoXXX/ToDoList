@@ -23,7 +23,7 @@ final class SignInViewModel {
     
     private(set) var pushStaticTextPublisher: PassthroughSubject<SignInStaticText, Never> = .init()
     private(set) var navigateToSignUpPublisher: PassthroughSubject<Void, Never> = .init()
-    private(set) var navigateToHomePublisher: PassthroughSubject<AuthModel, Never> = .init()
+    private(set) var navigateToHomePublisher: PassthroughSubject<UUID, Never> = .init()
     private(set) var showErrorPublisher: PassthroughSubject<String, Never> = .init()
     private var bindings: Set<AnyCancellable> = []
     
