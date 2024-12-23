@@ -13,6 +13,8 @@ final class ToDoListView: UIView {
     
     //MARK: - Private properties
     
+    private(set) var addButtonDidTappedPublisher: PassthroughSubject<Void, Never> = PassthroughSubject()
+    
     private var searchField: CustomTextField = {
         let searchField = CustomTextField()
         searchField.backgroundColor = Colors.darkBlueSecond
@@ -27,12 +29,13 @@ final class ToDoListView: UIView {
         return searchField
     }()
     
-    private var addButton: UIButton = {
+    private lazy var addButton: UIButton = {
         let button = UIButton()
         var configuration = UIButton.Configuration.plain()
         configuration.image = Images.plus
         configuration.background.backgroundColor = Colors.lightBlueSecond
         button.configuration = configuration
+        button.addTarget(self, action: #selector(addButtonTapped), for: .touchUpInside)
         return button
     }()
     
@@ -77,8 +80,8 @@ private extension ToDoListView {
     
     func addSubviews() {
         addSubview(searchField)
-        addSubview(addButton)
         addSubview(tableView)
+        addSubview(addButton)
     }
     
     func setupConstraints() {
@@ -88,6 +91,11 @@ private extension ToDoListView {
             make.height.equalTo(42)
         }
         
+        tableView.snp.makeConstraints { make in
+            make.top.equalTo(searchField.snp.bottom).offset(46)
+            make.leading.trailing.bottom.equalToSuperview()
+        }
+        
         addButton.snp.makeConstraints { make in
             make.width.equalTo(addButton.snp.height)
             make.height.equalTo(50)
@@ -95,9 +103,11 @@ private extension ToDoListView {
             make.bottom.equalToSuperview().inset(20)
         }
         
-        tableView.snp.makeConstraints { make in
-            make.top.equalTo(searchField.snp.bottom).offset(46)
-            make.leading.trailing.bottom.equalToSuperview()
-        }
+    }
+    
+    //MARK: - Button actions
+    
+    @objc func addButtonTapped() {
+        addButtonDidTappedPublisher.send()
     }
 }

@@ -37,7 +37,7 @@ final class HomeTabBarCoordinator: Coordinator {
         tabBarController.setViewControllers(controllers, animated: true)
         let tabBarAppearance = UITabBarAppearance()
         tabBarAppearance.configureWithOpaqueBackground()
-        tabBarAppearance.backgroundColor = .clear
+        tabBarAppearance.backgroundColor = Colors.clearColor
 
         tabBarAppearance.stackedLayoutAppearance.selected.iconColor = #colorLiteral(red: 0.2392156869, green: 0.6745098233, blue: 0.9686274529, alpha: 1)
         tabBarAppearance.stackedLayoutAppearance.selected.titleTextAttributes = [
@@ -48,7 +48,8 @@ final class HomeTabBarCoordinator: Coordinator {
         tabBarAppearance.stackedLayoutAppearance.normal.titleTextAttributes = [
             .foregroundColor: UIColor.white
         ]
-
+        
+        tabBarController.view.backgroundColor = Colors.clearColor
         tabBarController.tabBar.standardAppearance = tabBarAppearance
         if #available(iOS 15.0, *) {
             tabBarController.tabBar.scrollEdgeAppearance = tabBarAppearance

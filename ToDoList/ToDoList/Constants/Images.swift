@@ -31,4 +31,8 @@ enum Images {
     static let conversations = UIImage.conversation
     static let project = UIImage.projects
     static let policies = UIImage.policie
+    static let taskTitle = UIImage.taskTitle
+    static let taskDescription = UIImage.taskDescription
+    static let taskDate = UIImage.taskDate
+    static let taskTime = UIImage.taskTime
 }

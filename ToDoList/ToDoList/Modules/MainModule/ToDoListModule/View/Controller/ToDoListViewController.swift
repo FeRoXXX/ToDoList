@@ -13,6 +13,8 @@ final class ToDoListViewController: UIViewController {
     //MARK: - Private properties
     
     private var contentView = ToDoListView()
+    private var viewModel: ToDoListViewModel
+    private var bindings: Set<AnyCancellable> = []
     
     //MARK: - Lifecycle functions
     
@@ -20,6 +22,18 @@ final class ToDoListViewController: UIViewController {
         super.viewDidLoad()
         setupUI()
         bind()
+    }
+    
+    //MARK: - Initialization
+    
+    init(viewModel: ToDoListViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 }
 
@@ -40,7 +54,12 @@ private extension ToDoListViewController {
         //MARK: - bind view to viewModel
         
         func bindViewToViewModel() {
-            
+            contentView.addButtonDidTappedPublisher
+                .receive(on: DispatchQueue.main)
+                .sink { [weak self] _ in
+                    self?.viewModel.navigateToAddToDoItem()
+                }
+                .store(in: &bindings)
         }
         
         //MARK: - bind viewModel to view
