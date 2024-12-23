@@ -13,6 +13,8 @@ final class HomeViewController: UIViewController {
     //MARK: - Private properties
     
     private var contentView = HomeView()
+    private var viewModel: HomeViewModel
+    private var bindings: Set<AnyCancellable> = []
     
     //MARK: - Lifecycle functions
     
@@ -20,6 +22,19 @@ final class HomeViewController: UIViewController {
         super.viewDidLoad()
         setupUI()
         bind()
+        viewModel.loadData()
+    }
+    
+    //MARK: - Initialization
+    
+    init(viewModel: HomeViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 }
 
@@ -46,7 +61,19 @@ private extension HomeViewController {
         //MARK: - bind viewModel to view
         
         func bindViewModelToView() {
+            viewModel.pushTableViewData
+                .receive(on: DispatchQueue.main)
+                .sink { [weak self] value in
+                    self?.contentView.tableView.data = value
+                }
+                .store(in: &bindings)
             
+            viewModel.pushUserProfileData
+                .receive(on: DispatchQueue.main)
+                .sink { [weak self] value in
+                    self?.contentView.setupProfileData(value)
+                }
+                .store(in: &bindings)
         }
         
         bindViewModelToView()

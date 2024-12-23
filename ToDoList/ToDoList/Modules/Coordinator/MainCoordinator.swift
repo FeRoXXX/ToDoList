@@ -45,7 +45,6 @@ extension MainCoordinator {
                 self?.removeChild(coordinator)
                 self?.firstOpenService?.set(isFirstOpen: false)
                 self?.start()
-                self?.bindings.removeAll()
             }
             .store(in: &bindings)
         addChildCoordinator(coordinator)

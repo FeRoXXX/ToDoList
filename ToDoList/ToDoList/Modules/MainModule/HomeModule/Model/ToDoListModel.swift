@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct ToDoListModel {
+struct ToDoListModel: Equatable {
     let title: String
     let date: String
     let isComplete: Bool

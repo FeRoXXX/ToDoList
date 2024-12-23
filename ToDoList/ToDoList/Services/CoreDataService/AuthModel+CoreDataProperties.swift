@@ -2,7 +2,7 @@
 //  AuthModel+CoreDataProperties.swift
 //  ToDoList
 //
-//  Created by Александр Федоткин on 21.12.2024.
+//  Created by Александр Федоткин on 24.12.2024.
 //
 //
 
@@ -41,4 +41,6 @@ extension AuthModel {
 
 }
 
-extension AuthModel : Identifiable {}
+extension AuthModel : Identifiable {
+
+}

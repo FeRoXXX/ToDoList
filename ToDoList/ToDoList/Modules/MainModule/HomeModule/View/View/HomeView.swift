@@ -15,7 +15,6 @@ final class HomeView: UIView {
     
     private var fullNameLabel: UILabel = {
         let label = UILabel()
-        label.text = "grgrgrgg"
         label.textColor = Colors.whiteColorFirst
         label.font = UIFont(name: Fonts.poppinsBold.rawValue, size: 18)
         return label
@@ -23,13 +22,14 @@ final class HomeView: UIView {
     
     private var emailLabel: UILabel = {
         let label = UILabel()
-        label.text = "ferox"
         label.textColor = Colors.whiteColorFourth
         label.font = UIFont(name: Fonts.poppinsMedium.rawValue, size: 14)
         return label
     }()
     
-    private var tableView: HomeTableView = {
+    //MARK: - Public properties
+    
+    var tableView: HomeTableView = {
         let tableView = HomeTableView(frame: .zero, style: .grouped)
         tableView.backgroundColor = .clear
         return tableView
@@ -87,5 +87,17 @@ private extension HomeView {
             make.top.equalTo(emailLabel.snp.bottom).offset(71)
             make.leading.trailing.bottom.equalToSuperview()
         }
+    }
+}
+
+//MARK: - Public extension
+
+extension HomeView {
+    
+    //MARK: - Setup profile data
+    
+    func setupProfileData(_ data: UserPublicDataModel) {
+        emailLabel.text = data.email
+        fullNameLabel.text = data.fullName
     }
 }

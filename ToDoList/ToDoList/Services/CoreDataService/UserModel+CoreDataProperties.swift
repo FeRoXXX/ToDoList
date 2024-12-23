@@ -2,7 +2,7 @@
 //  UserModel+CoreDataProperties.swift
 //  ToDoList
 //
-//  Created by Александр Федоткин on 21.12.2024.
+//  Created by Александр Федоткин on 24.12.2024.
 //
 //
 
@@ -16,13 +16,15 @@ extension UserModel {
         return NSFetchRequest<UserModel>(entityName: "UserModel")
     }
 
-    @NSManaged public var id: UUID?
+    @NSManaged public var endDate: Date
+    @NSManaged public var id: UUID
     @NSManaged public var isDone: Bool
-    @NSManaged public var endDate: Date?
-    @NSManaged public var title: String?
-    @NSManaged public var noteDescription: String?
-    @NSManaged public var relationship: AuthModel?
+    @NSManaged public var noteDescription: String
+    @NSManaged public var title: String
+    @NSManaged public var relationship: AuthModel
 
 }
 
-extension UserModel : Identifiable {}
+extension UserModel : Identifiable {
+
+}

@@ -47,7 +47,7 @@ extension CoreDataService {
     
     //MARK: - Create object method
     
-    func createObject(_ data: SignUpRequestModel) -> Result<UUID, Error> {
+    func createUser(_ data: SignUpRequestModel) -> Result<UUID, Error> {
         defer {
             appDelegate.saveContext()
         }
@@ -62,6 +62,40 @@ extension CoreDataService {
         user.fullName = data.fullName
         
         return .success(user.id)
+    }
+    
+    func createTask(_ taskData: TaskRequestModel) -> Bool {
+        defer {
+            appDelegate.saveContext()
+        }
+        
+        guard let userEntityDescription = NSEntityDescription.entity(forEntityName: "UserModel", in: context) else {
+            return false
+        }
+        let user = UserModel(entity: userEntityDescription, insertInto: context)
+        user.id = UUID()
+        user.title = taskData.title
+        user.noteDescription = taskData.description
+        user.endDate = taskData.endDate
+        user.isDone = taskData.isDone
+        user.relationship = taskData.relationship
+        return true
+    }
+    
+    func getSortedTasks(by userId: UUID) -> Result<[UserModel], Error> {
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "UserModel")
+        let relationshipPredicate = NSPredicate(format: "relationship.id = %@", userId as CVarArg)
+        fetchRequest.predicate = relationshipPredicate
+        
+        let sortDescriptor = NSSortDescriptor(key: "endDate", ascending: true)
+        fetchRequest.sortDescriptors = [sortDescriptor]
+        
+        do {
+            let data = (try context.fetch(fetchRequest) as? [UserModel]) ?? []
+            return .success(data)
+        } catch {
+            return .failure(Errors.badDecode)
+        }
     }
     
     //MARK: - Check user already sign up
@@ -97,6 +131,7 @@ extension CoreDataService {
             guard let data = data.first else {
                 return .failure(Errors.doesNotExist)
             }
+            
             return .success(data.id)
         } catch {
             return .failure(Errors.badDecode)
@@ -107,17 +142,23 @@ extension CoreDataService {
     
     func getUserPublicData(by id: UUID) -> Result<UserPublicDataModel, Error> {
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "AuthModel")
-        let emailPredicate = NSPredicate(format: "id = %@", id.uuidString)
+        let idPredicate = NSPredicate(format: "id = %@", id as CVarArg)
         
-        fetchRequest.predicate = emailPredicate
+        fetchRequest.predicate = idPredicate
         fetchRequest.propertiesToFetch = ["email", "fullName"]
+        fetchRequest.resultType = .dictionaryResultType
         
         do {
-            let data = (try context.fetch(fetchRequest) as? [UserPublicDataModel]) ?? []
-            guard let data = data.first else {
+            let results = try context.fetch(fetchRequest)
+            
+            guard let firstResult = results.first as? [String: Any],
+                  let email = firstResult["email"] as? String,
+                  let fullName = firstResult["fullName"] as? String else {
                 return .failure(Errors.doesNotExist)
             }
-            return .success(data)
+            
+            let userPublicData = UserPublicDataModel(fullName: fullName, email: email)
+            return .success(userPublicData)
         } catch {
             return .failure(Errors.badDecode)
         }

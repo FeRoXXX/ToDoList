@@ -77,7 +77,7 @@ final class AuthService {
                 return Fail(error: Errors.alreadyExists)
                     .eraseToAnyPublisher()
             } else {
-                let result = CoreDataService.shared.createObject(SignUpRequestModel(email: email,
+                let result = CoreDataService.shared.createUser(SignUpRequestModel(email: email,
                                                                    fullName: fullName,
                                                                    password: password))
                 
@@ -91,7 +91,7 @@ final class AuthService {
                 }
             }
         case .failure(_):
-            let result = CoreDataService.shared.createObject(SignUpRequestModel(email: email,
+            let result = CoreDataService.shared.createUser(SignUpRequestModel(email: email,
                                                                fullName: fullName,
                                                                password: password))
             switch result {

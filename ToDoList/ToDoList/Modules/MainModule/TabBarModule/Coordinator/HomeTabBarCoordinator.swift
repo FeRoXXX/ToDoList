@@ -51,7 +51,7 @@ final class HomeTabBarCoordinator: Coordinator {
         navigationController.view.layer.insertSublayer(Background.shared.getGradientLayer(frame: navigationController.view.frame), at: 0)
         switch page {
         case .home:
-            let coordinator = HomeCoordinator(navigationController: navigationController)
+            let coordinator = HomeCoordinator(navigationController: navigationController, authenticationKey: authenticationData, profileService: ProfileDataService.shared)
             addChildCoordinator(coordinator)
             coordinator.start()
             return coordinator.navigationController
@@ -61,7 +61,7 @@ final class HomeTabBarCoordinator: Coordinator {
             coordinator.start()
             return coordinator.navigationController
         case .calendar:
-            let coordinator = HomeCoordinator(navigationController: navigationController)
+            let coordinator = HomeCoordinator(navigationController: navigationController, authenticationKey: authenticationData, profileService: ProfileDataService.shared)
             addChildCoordinator(coordinator)
             coordinator.start()
             return coordinator.navigationController

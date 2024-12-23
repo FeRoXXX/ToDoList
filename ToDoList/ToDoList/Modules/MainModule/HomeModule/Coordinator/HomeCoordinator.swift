@@ -13,12 +13,12 @@ final class HomeCoordinator: Coordinator {
     //MARK: - Private properties
     
     private let authenticationKey: UUID
-    private let authenticationService: AuthService
+    private let profileService: ProfileDataService
     
     //MARK: - Initialization
     
-    init(navigationController: UINavigationController, authenticationKey: UUID, authenticationService: AuthService) {
-        self.authenticationService = authenticationService
+    init(navigationController: UINavigationController, authenticationKey: UUID, profileService: ProfileDataService) {
+        self.profileService = profileService
         self.authenticationKey = authenticationKey
         super.init(navigationController: navigationController)
     }
@@ -26,7 +26,8 @@ final class HomeCoordinator: Coordinator {
     //MARK: - Override functions
     
     override func start() {
-        let controller = HomeViewController()
+        let viewModel = HomeViewModel(userId: authenticationKey, profileDataService: profileService)
+        let controller = HomeViewController(viewModel: viewModel)
         navigationController.setViewControllers([controller], animated: true)
     }
     

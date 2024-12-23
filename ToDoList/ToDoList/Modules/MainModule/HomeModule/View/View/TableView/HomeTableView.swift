@@ -11,16 +11,11 @@ final class HomeTableView: UITableView {
     
     //MARK: - Private properties
     
-    private var data: [[ToDoListModel]] = [
-        [
-        .init(title: "Client meeting", date: "Tomorrow | 10:30pm", isComplete: false),
-        .init(title: "Client meeting", date: "Tomorrow | 10:30pm", isComplete: false),
-        ],
-        [
-        .init(title: "Client meeting", date: "Tomorrow | 10:30pm", isComplete: true),
-        .init(title: "Client meeting", date: "Tomorrow | 10:30pm", isComplete: true),
-        ]
-    ]
+    var data: [[ToDoListModel]] = [] {
+        didSet {
+            updateIndexPaths(oldValue: oldValue, data: data)
+        }
+    }
     
     //MARK: - Initialization
     
@@ -35,6 +30,7 @@ final class HomeTableView: UITableView {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+
 }
 
 //MARK: - UICollectionViewDelegate, UICollectionViewDataSource
