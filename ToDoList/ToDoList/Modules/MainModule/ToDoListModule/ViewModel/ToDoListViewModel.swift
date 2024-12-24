@@ -14,6 +14,7 @@ final class ToDoListViewModel {
     
     private(set) var pushTableViewData: PassthroughSubject<[ToDoListModel], Never> = .init()
     private(set) var navigateToAddNew: PassthroughSubject<Void, Never> = .init()
+    private(set) var routeToTaskDetails: PassthroughSubject<UUID, Never> = .init()
     private var bindings: Set<AnyCancellable> = []
     private var userId: UUID
     private var profileDataService: ProfileDataService
@@ -39,22 +40,29 @@ extension ToDoListViewModel {
     //MARK: - didLoad
     
     func loadData() {
-        requestTableViewData()
+        bind()
+        profileDataService.getUserIncompleteTasks(userId: userId)
     }
     
-    //MARK: - Request Table view data
+    //MARK: - bind
     
-    func requestTableViewData() {
-        profileDataService.getUserIncompleteTasks(userId: userId)
+    func bind() {
+        profileDataService.servicePublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] error in
                 print(error)
-            } receiveValue: { [weak self] data in
-                let incompleteTasks = data.map {ToDoListModel(title: $0.title,
-                                                             date: $0.endDate.formattedForDisplay(),
-                                                             isComplete: $0.isDone)}
-                
-                self?.pushTableViewData.send(incompleteTasks)
+            } receiveValue: { [weak self] type in
+                switch type {
+                case .incompleteTasks(let data):
+                    let incompleteTasks = data.map {ToDoListModel(taskId: $0.id,
+                                                                  title: $0.title,
+                                                                  date: $0.endDate.formattedForDisplay(),
+                                                                  isComplete: $0.isDone)}
+                    
+                    self?.pushTableViewData.send(incompleteTasks)
+                default:
+                    return
+                }
             }
             .store(in: &bindings)
     }
@@ -63,5 +71,9 @@ extension ToDoListViewModel {
     
     func navigateToAddNewTask() {
         navigateToAddNew.send()
+    }
+    
+    func navigateToTaskDetails(taskId: UUID) {
+        routeToTaskDetails.send(taskId)
     }
 }

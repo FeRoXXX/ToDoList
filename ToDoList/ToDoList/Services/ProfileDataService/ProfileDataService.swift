@@ -33,48 +33,58 @@ final class ProfileDataService {
         }
     }
     
+    //MARK: - Subscribers
+    
+    enum SubscribersType {
+        case userProfileData(UserPublicDataModel)
+        case incompleteTasks([UserModel])
+        case userTasks([UserModel])
+        case taskDetails(UserModel)
+        case createTasks
+        case deleteTaskResult
+        case updateTaskResult
+    }
+    
     //MARK: - Static properties
     
     static var shared: ProfileDataService = ProfileDataService()
+    
+    private(set) var servicePublisher: PassthroughSubject<SubscribersType, Error> = PassthroughSubject()
     
     //MARK: - Initialization
     
     private init() {}
     
-    func getEmailAndFullName(by id: UUID) -> AnyPublisher<UserPublicDataModel, Error> {
+    func getEmailAndFullName(by id: UUID) {
         let result = CoreDataService.shared.getUserPublicData(by: id)
         
         switch result {
         case .success(let success):
-            return Result.Publisher(success)
-                .eraseToAnyPublisher()
+            servicePublisher.send(.userProfileData(success))
         case .failure(let failure):
-            return Result.Publisher(failure)
-                .eraseToAnyPublisher()
+            return
         }
     }
     
-    func getUserTasksByUserId(_ id: UUID) -> AnyPublisher<[UserModel], Error> {
+    func getUserTasksByUserId(_ id: UUID) {
         
         let result = CoreDataService.shared.getSortedTasks(by: id)
         
         switch result {
         case .success(let success):
-            return Result.Publisher(success)
-                .eraseToAnyPublisher()
+            servicePublisher.send(.userTasks(success))
         case .failure(let failure):
-            return Result.Publisher(failure)
-                .eraseToAnyPublisher()
+            return
         }
     }
     
-    func createTask(_ task: TaskModel) -> AnyPublisher<Bool, Error> {
+    func createTask(_ task: TaskModel) {
         guard let title = task.title,
               let description = task.description,
               let endDate = task.endDate,
               let relationshipId = task.relationshipId else {
-            return Fail(error: Errors.emptyString)
-                .eraseToAnyPublisher()
+            
+            return
         }
         
         let result = CoreDataService.shared.createTask(TaskRequestModel(title: title,
@@ -82,20 +92,43 @@ final class ProfileDataService {
                                                                         endDate: endDate,
                                                                         isDone: task.isDone,
                                                                         relationshipId: relationshipId))
-        return Result.Publisher(result)
-            .eraseToAnyPublisher()
+        if result {
+            servicePublisher.send(.createTasks)
+        }
     }
     
-    func getUserIncompleteTasks(userId: UUID) -> AnyPublisher<[UserModel], Error> {
+    func getUserIncompleteTasks(userId: UUID){
         let result = CoreDataService.shared.getSortedIncompleteTasks(by: userId)
         
         switch result {
         case .success(let success):
-            return Result.Publisher(success)
-                .eraseToAnyPublisher()
+            servicePublisher.send(.incompleteTasks(success))
         case .failure(let failure):
-            return Result.Publisher(failure)
-                .eraseToAnyPublisher()
+            return
+        }
+    }
+    
+    func getTaskById(_ taskId: UUID)  {
+        let result = CoreDataService.shared.getTaskDetailsById(taskId)
+        
+        guard let result else { return }
+        
+        servicePublisher.send(.taskDetails(result))
+    }
+    
+    func deleteTaskById(_ taskId: UUID) {
+        let result = CoreDataService.shared.deleteTaskById(taskId)
+        
+        if result {
+            servicePublisher.send(.deleteTaskResult)
+        }
+    }
+    
+    func updateTaskById(_ taskId: UUID) {
+        let result = CoreDataService.shared.updateTaskById(taskId)
+        
+        if result {
+            servicePublisher.send(.updateTaskResult)
         }
     }
 }

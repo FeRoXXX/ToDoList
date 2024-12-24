@@ -13,6 +13,6 @@
         <attribute name="isDone" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="noteDescription" attributeType="String"/>
         <attribute name="title" attributeType="String"/>
-        <relationship name="relationship" maxCount="1" deletionRule="Cascade" destinationEntity="AuthModel" inverseName="relationship" inverseEntity="AuthModel"/>
+        <relationship name="relationship" maxCount="1" deletionRule="No Action" destinationEntity="AuthModel" inverseName="relationship" inverseEntity="AuthModel"/>
     </entity>
 </model>

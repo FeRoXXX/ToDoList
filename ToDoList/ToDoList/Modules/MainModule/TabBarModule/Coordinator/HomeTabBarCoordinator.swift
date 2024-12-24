@@ -25,6 +25,7 @@ final class HomeTabBarCoordinator: Coordinator {
     //MARK: - Override methods
     
     override func start() {
+        navigationController.isNavigationBarHidden = true
         let pages: [TabBarPages] = [.home, .toDoList, .calendar, .settings]
         navigationController.setViewControllers([tabBarController], animated: true)
         let controllers: [UINavigationController] = pages.map {prepareViewController(page: $0)}

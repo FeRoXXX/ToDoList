@@ -8,6 +8,7 @@
 import Foundation
 
 struct ToDoListModel: Equatable {
+    let taskId: UUID
     let title: String
     let date: String
     let isComplete: Bool

@@ -55,7 +55,12 @@ private extension HomeViewController {
         //MARK: - bind view to viewModel
         
         func bindViewToViewModel() {
-            
+            contentView.tableView.cellTappedPublisher
+                .receive(on: DispatchQueue.main)
+                .sink { [weak self] id in
+                    self?.viewModel.navigateToDetails(for: id)
+                }
+                .store(in: &bindings)
         }
         
         //MARK: - bind viewModel to view

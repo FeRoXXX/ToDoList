@@ -206,4 +206,67 @@ extension CoreDataService {
             return nil
         }
     }
+    
+    func getTaskDetailsById(_ id: UUID) -> UserModel? {
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "UserModel")
+        let idPredicate = NSPredicate(format: "id = %@", id as CVarArg)
+        
+        fetchRequest.predicate = idPredicate
+        
+        do {
+            let results = try context.fetch(fetchRequest)
+            
+            guard let firstResult = results.first as? UserModel else {
+                return nil
+            }
+            
+            return firstResult
+        } catch {
+            return nil
+        }
+    }
+    
+    func deleteTaskById(_ id: UUID) -> Bool {
+        defer {
+            appDelegate.saveContext()
+        }
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "UserModel")
+        let idPredicate = NSPredicate(format: "id = %@", id as CVarArg)
+        
+        fetchRequest.predicate = idPredicate
+        
+        do {
+            let results = try context.fetch(fetchRequest)
+            
+            guard let firstResult = results.first as? NSManagedObject else {
+                return false
+            }
+            context.delete(firstResult)
+            return true
+        } catch {
+            return false
+        }
+    }
+    
+    func updateTaskById(_ id: UUID) -> Bool {
+        defer {
+            appDelegate.saveContext()
+        }
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "UserModel")
+        let idPredicate = NSPredicate(format: "id = %@", id as CVarArg)
+        
+        fetchRequest.predicate = idPredicate
+        
+        do {
+            let results = try context.fetch(fetchRequest)
+            
+            guard let firstResult = results.first as? NSManagedObject else {
+                return false
+            }
+            firstResult.setValue(true, forKey: "isDone")
+            return true
+        } catch {
+            return false
+        }
+    }
 }

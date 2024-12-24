@@ -21,6 +21,7 @@ final class MainCoordinator: Coordinator {
     }
     
     override func start() {
+        print(FileManager.default.temporaryDirectory)
         guard let firstOpenService else { return }
         if firstOpenService.fetchState() {
             goToOnboarding()

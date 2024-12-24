@@ -6,10 +6,15 @@
 //
 
 import UIKit
+import Combine
 
 final class ToDoListTableView: UITableView {
     
     //MARK: - Private properties
+    
+    private(set) var selectedRowPublisher: PassthroughSubject<UUID, Never> = .init()
+    
+    //MARK: - Public properties
     
     var data: [ToDoListModel] = [] {
         didSet {
@@ -54,5 +59,9 @@ extension ToDoListTableView: UITableViewDelegate, UITableViewDataSource {
         cell.cellSpacing = 17.5
         cell.setupData(data)
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        selectedRowPublisher.send(data[indexPath.row].taskId)
     }
 }

@@ -42,4 +42,47 @@ extension Date {
             return fullDateFormatter.string(from: self).lowercased()
         }
     }
+    
+    func formattedForDisplayDateAndTime() -> (String, String) {
+            let calendar = Calendar.current
+            let now = Date()
+            
+            if calendar.isDateInToday(self) {
+                let timeFormatter = DateFormatter()
+                timeFormatter.dateFormat = "h:mma"
+                timeFormatter.amSymbol = "am"
+                timeFormatter.pmSymbol = "pm"
+                let time = timeFormatter.string(from: self).lowercased()
+                return ("Today", time)
+            } else if calendar.isDateInTomorrow(self) {
+                let timeFormatter = DateFormatter()
+                timeFormatter.dateFormat = "h:mma"
+                timeFormatter.amSymbol = "am"
+                timeFormatter.pmSymbol = "pm"
+                let time = timeFormatter.string(from: self).lowercased()
+                return ("Tomorrow", time)
+            } else if let startOfWeek = calendar.date(from: calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: now)),
+                      let endOfWeek = calendar.date(byAdding: .day, value: 6, to: startOfWeek),
+                      self >= startOfWeek && self <= endOfWeek {
+                let dayOfWeekFormatter = DateFormatter()
+                dayOfWeekFormatter.dateFormat = "EEEE"
+                let timeFormatter = DateFormatter()
+                timeFormatter.dateFormat = "h:mma"
+                timeFormatter.amSymbol = "am"
+                timeFormatter.pmSymbol = "pm"
+                let day = dayOfWeekFormatter.string(from: self).capitalized
+                let time = timeFormatter.string(from: self).lowercased()
+                return (day, time)
+            } else {
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateFormat = "dd.MM.yy"
+                let timeFormatter = DateFormatter()
+                timeFormatter.dateFormat = "h:mma"
+                timeFormatter.amSymbol = "am"
+                timeFormatter.pmSymbol = "pm"
+                let date = dateFormatter.string(from: self)
+                let time = timeFormatter.string(from: self).lowercased()
+                return (date, time)
+            }
+        }
 }

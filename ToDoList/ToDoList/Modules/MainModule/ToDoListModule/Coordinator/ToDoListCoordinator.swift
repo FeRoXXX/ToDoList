@@ -16,6 +16,8 @@ final class ToDoListCoordinator: Coordinator {
     private var profileDataService: ProfileDataService
     private var newTaskSubscription: AnyCancellable?
     private var newTaskCancelSubscription: AnyCancellable?
+    private var routeToBackSubscription: AnyCancellable?
+    private var taskDetailSubscription: AnyCancellable?
     
     //MARK: - Initialization
     
@@ -35,6 +37,11 @@ final class ToDoListCoordinator: Coordinator {
                 self?.routeToAddItem()
             }
         
+        taskDetailSubscription = viewModel.routeToTaskDetails
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] value in
+                self?.routeToTaskDetails(taskId: value)
+            }
         let controller = ToDoListViewController(viewModel: viewModel)
         navigationController.setViewControllers([controller], animated: true)
     }
@@ -58,5 +65,25 @@ private extension ToDoListCoordinator {
             }
         coordinator.start()
         addChildCoordinator(coordinator)
+    }
+    
+    func routeToTaskDetails(taskId: UUID) {
+        navigationController.isNavigationBarHidden = true
+        let coordinator = TaskDetailsCoordinator(navigationController: navigationController, taskId: taskId, profileService: profileDataService)
+        coordinator.start()
+        routeToBackSubscription = coordinator.routeToBackPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.finishDetailsModule()
+                self?.removeChild(coordinator)
+                self?.routeToBackSubscription = nil
+            }
+        addChildCoordinator(coordinator)
+    }
+    
+    func finishDetailsModule() {
+        profileDataService.getUserIncompleteTasks(userId: authenticationKey)
+        profileDataService.getUserTasksByUserId(authenticationKey)
+        navigationController.popViewController(animated: true)
     }
 }

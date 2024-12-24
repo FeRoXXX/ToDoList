@@ -9,6 +9,7 @@ import UIKit
 
 enum Images {
     static let arrowRight = UIImage.arrowRight
+    static let arrowLeft = UIImage.arrowLeft
     static let complete = UIImage.complete
     static let calendar = UIImage.calendar
     static let home = UIImage.home
@@ -35,4 +36,8 @@ enum Images {
     static let taskDescription = UIImage.taskDescription
     static let taskDate = UIImage.taskDate
     static let taskTime = UIImage.taskTime
+    static let taskDetailsTitle = UIImage.taskDetailsTitle
+    static let taskDetailsDateCalendar = UIImage.taskDetailsDateCalendar
+    static let taskDetailsDateClock = UIImage.taskDetailDateClock
+    static let taskDetailsDeleteButton = UIImage.taskDetailsDeleteButton
 }

@@ -22,6 +22,7 @@ final class NewTaskViewModel {
     init(profileDataService: ProfileDataService, authenticationKey: UUID) {
         self.profileDataService = profileDataService
         self.authenticationKey = authenticationKey
+        bind()
     }
 }
 
@@ -34,7 +35,7 @@ private extension NewTaskViewModel {
     func combineDateAndTime(dateString: String?, timeString: String?) -> Date? {
         guard let dateString,
               let timeString else { return nil }
-        let combinedFormat = "MM/yyyy HH:mm"
+        let combinedFormat = "dd/MM/yyyy HH:mm"
         
         let combinedString = "\(dateString) \(timeString)"
         
@@ -43,6 +44,27 @@ private extension NewTaskViewModel {
         dateFormatter.locale = Locale(identifier: "en_US_POSIX")
         
         return dateFormatter.date(from: combinedString)
+    }
+    
+    func bind() {
+        profileDataService.servicePublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] error in
+                print(error)
+            } receiveValue: { [weak self] type in
+                switch type {
+                case .createTasks:
+                    if let authenticationKey = self?.authenticationKey {
+                        self?.profileDataService.getUserIncompleteTasks(userId: authenticationKey)
+                        self?.profileDataService.getUserTasksByUserId(authenticationKey)
+                        self?.cancelNewTaskModule.send()
+                    }
+                default:
+                    break
+                }
+            }
+            .store(in: &bindings)
+
     }
 }
 
@@ -53,13 +75,6 @@ extension NewTaskViewModel {
     func createNewTask(_ task: NewTaskDataModel) {
         let endDate = combineDateAndTime(dateString: task.date, timeString: task.time)
         profileDataService.createTask(TaskModel(title: task.title, description: task.description, endDate: endDate, relationshipId: authenticationKey))
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] error in
-                print(error)
-            } receiveValue: { [weak self] isEnd in
-                self?.cancelNewTaskModule.send()
-            }
-            .store(in: &bindings)
     }
     
     func cancelTaskCreation() {

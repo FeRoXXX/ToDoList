@@ -1,19 +1,19 @@
 //
-//  ToDoListViewController.swift
+//  TaskDetailsViewController.swift
 //  ToDoList
 //
-//  Created by Александр Федоткин on 22.12.2024.
+//  Created by Александр Федоткин on 24.12.2024.
 //
 
 import UIKit
 import Combine
 
-final class ToDoListViewController: UIViewController {
+final class TaskDetailsViewController: UIViewController {
     
     //MARK: - Private properties
     
-    private var contentView = ToDoListView()
-    private var viewModel: ToDoListViewModel
+    private var contentView = TaskDetailsView()
+    private var viewModel: TaskDetailsViewModel
     private var bindings: Set<AnyCancellable> = []
     
     //MARK: - Lifecycle functions
@@ -27,7 +27,7 @@ final class ToDoListViewController: UIViewController {
     
     //MARK: - Initialization
     
-    init(viewModel: ToDoListViewModel) {
+    init(viewModel: TaskDetailsViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
@@ -40,7 +40,7 @@ final class ToDoListViewController: UIViewController {
 
 //MARK: - Private extension
 
-private extension ToDoListViewController {
+private extension TaskDetailsViewController {
     
     //MARK: - UI initialization function
     
@@ -55,17 +55,24 @@ private extension ToDoListViewController {
         //MARK: - bind view to viewModel
         
         func bindViewToViewModel() {
-            contentView.addButtonDidTappedPublisher
+            contentView.backButtonPublisher
                 .receive(on: DispatchQueue.main)
                 .sink { [weak self] _ in
-                    self?.viewModel.navigateToAddNewTask()
+                    self?.viewModel.navigateToBack()
                 }
                 .store(in: &bindings)
             
-            contentView.tableView.selectedRowPublisher
+            contentView.deleteButtonPublisher
                 .receive(on: DispatchQueue.main)
-                .sink { [weak self] taskId in
-                    self?.viewModel.navigateToTaskDetails(taskId: taskId)
+                .sink { [weak self] _ in
+                    self?.viewModel.deleteTaskById()
+                }
+                .store(in: &bindings)
+            
+            contentView.completeButtonPublisher
+                .receive(on: DispatchQueue.main)
+                .sink { [weak self] _ in
+                    self?.viewModel.updateTaskById()
                 }
                 .store(in: &bindings)
         }
@@ -73,11 +80,10 @@ private extension ToDoListViewController {
         //MARK: - bind viewModel to view
         
         func bindViewModelToView() {
-            
-            viewModel.pushTableViewData
+            viewModel.pushTaskDetails
                 .receive(on: DispatchQueue.main)
                 .sink { [weak self] value in
-                    self?.contentView.tableView.data = value
+                    self?.contentView.setupTaskData(value)
                 }
                 .store(in: &bindings)
         }
@@ -86,3 +92,4 @@ private extension ToDoListViewController {
         bindViewToViewModel()
     }
 }
+
