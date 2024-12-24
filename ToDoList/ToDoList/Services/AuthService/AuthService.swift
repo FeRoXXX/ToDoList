@@ -33,17 +33,23 @@ final class AuthService {
         }
     }
     
-    //MARK: - Static properties
+    enum SubscribersType {
+        case signUp(UUID)
+        case signIn(UUID)
+        case error(Error)
+    }
     
-    static var shared: AuthService = AuthService()
+    //MARK: - Private properties
+    
+    private(set) var servicePublisher: PassthroughSubject<SubscribersType, Error> = PassthroughSubject()
     
     //MARK: - Initialization
     
-    private init() {}
+    init() {}
     
     //MARK: - Sign up
     
-    func signUp(_ data: SignUpModel) -> AnyPublisher<UUID, Error> {
+    func signUp(_ data: SignUpModel){
         guard let fullName = data.fullName,
               let email = data.email,
               let password = data.password,
@@ -51,31 +57,30 @@ final class AuthService {
               !email.isEmpty,
               !password.isEmpty
         else {
-            return Fail(error: Errors.emptyString)
-                .eraseToAnyPublisher()
+            servicePublisher.send(.error(Errors.emptyString))
+            return
         }
         
         guard isValidFullName(fullName) else {
-            return Fail(error: Errors.badFullName)
-                .eraseToAnyPublisher()
+            servicePublisher.send(.error(Errors.badFullName))
+            return
         }
         
         guard isValidEmail(email) else {
-            return Fail(error: Errors.badEmail)
-                .eraseToAnyPublisher()
+            servicePublisher.send(.error(Errors.badEmail))
+            return
         }
         
         guard isValidPassword(password) else {
-            return Fail(error: Errors.badPassword)
-                .eraseToAnyPublisher()
+            servicePublisher.send(.error(Errors.badPassword))
+            return
         }
         
         let result = CoreDataService.shared.checkUserExist(by: SignInRequestModel(email: email, password: password))
         switch result {
         case .success(let success):
             if success {
-                return Fail(error: Errors.alreadyExists)
-                    .eraseToAnyPublisher()
+                servicePublisher.send(.error(Errors.alreadyExists))
             } else {
                 let result = CoreDataService.shared.createUser(SignUpRequestModel(email: email,
                                                                    fullName: fullName,
@@ -83,11 +88,9 @@ final class AuthService {
                 
                 switch result {
                 case .success(let success):
-                    return Result.Publisher(success)
-                        .eraseToAnyPublisher()
+                    servicePublisher.send(.signUp(success))
                 case .failure(let failure):
-                    return Result.Publisher(failure)
-                        .eraseToAnyPublisher()
+                    servicePublisher.send(.error(failure))
                 }
             }
         case .failure(_):
@@ -96,43 +99,41 @@ final class AuthService {
                                                                password: password))
             switch result {
             case .success(let success):
-                return Result.Publisher(success)
-                    .eraseToAnyPublisher()
+                servicePublisher.send(.signUp(success))
             case .failure(let failure):
-                return Fail(error: failure)
-                    .eraseToAnyPublisher()
+                servicePublisher.send(.error(failure))
             }
         }
     }
     
-    func signIn(_ data: SignInModel) -> AnyPublisher<UUID, Error> {
+    //MARK: - Sign in
+    
+    func signIn(_ data: SignInModel) {
         guard let email = data.email,
               let password = data.password,
               !email.isEmpty,
               !password.isEmpty
         else {
-            return Fail(error: Errors.emptyString)
-                .eraseToAnyPublisher()
+            servicePublisher.send(.error(Errors.emptyString))
+            return
         }
         
         guard isValidEmail(email) else {
-            return Fail(error: Errors.badEmail)
-                .eraseToAnyPublisher()
+            servicePublisher.send(.error(Errors.badEmail))
+            return
         }
         
         guard isValidPassword(password) else {
-            return Fail(error: Errors.badPassword)
-                .eraseToAnyPublisher()
+            servicePublisher.send(.error(Errors.badPassword))
+            return
         }
         
         let result = CoreDataService.shared.getUserID(by: SignInRequestModel(email: email, password: password))
         switch result {
         case .success(let success):
-            return Result.Publisher(success)
-                .eraseToAnyPublisher()
+            servicePublisher.send(.signIn(success))
         case .failure(let failure):
-            return Fail(error: failure)
-                .eraseToAnyPublisher()
+            servicePublisher.send(.error(failure))
         }
     }
 }

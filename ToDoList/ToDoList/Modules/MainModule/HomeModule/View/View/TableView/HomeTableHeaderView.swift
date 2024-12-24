@@ -61,6 +61,8 @@ private extension HomeTableHeaderView {
 
 extension HomeTableHeaderView {
     
+    //MARK: - Setup title function
+    
     func setupTitle(_ text: String) {
         title.text = text
     }

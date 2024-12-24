@@ -11,6 +11,7 @@ import Combine
 
 final class CoreDataService {
     
+    //MARK: - Errors
     enum Errors: Error {
         case dataBaseError
         case badDecode
@@ -31,7 +32,11 @@ final class CoreDataService {
         }
     }
     
+    //MARK: - Static properties
+    
     static let shared = CoreDataService()
+    
+    //MARK: - Private properties
     
     private var appDelegate: AppDelegate {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { fatalError() }
@@ -45,7 +50,7 @@ final class CoreDataService {
 
 extension CoreDataService {
     
-    //MARK: - Create object method
+    //MARK: - Create user method
     
     func createUser(_ data: SignUpRequestModel) -> Result<UUID, Error> {
         defer {
@@ -63,6 +68,8 @@ extension CoreDataService {
         
         return .success(user.id)
     }
+    
+    //MARK: - Create task method
     
     func createTask(_ taskData: TaskRequestModel) -> Bool {
         defer {
@@ -88,12 +95,14 @@ extension CoreDataService {
         return true
     }
     
+    //MARK: - Get sorted task
+    
     func getSortedTasks(by userId: UUID) -> Result<[UserModel], Error> {
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "UserModel")
         let relationshipPredicate = NSPredicate(format: "relationship.id = %@", userId as CVarArg)
         fetchRequest.predicate = relationshipPredicate
         
-        let sortDescriptor = NSSortDescriptor(key: "endDate", ascending: true)
+        let sortDescriptor = NSSortDescriptor(key: "endDate", ascending: false)
         fetchRequest.sortDescriptors = [sortDescriptor]
         
         do {
@@ -104,6 +113,8 @@ extension CoreDataService {
         }
     }
     
+    //MARK: - Get sorted incomplete task
+    
     func getSortedIncompleteTasks(by userId: UUID) -> Result<[UserModel], Error> {
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "UserModel")
         let relationshipPredicate = NSPredicate(format: "relationship.id = %@", userId as CVarArg)
@@ -111,7 +122,7 @@ extension CoreDataService {
         let andPredicate = NSCompoundPredicate(type: .and, subpredicates: [relationshipPredicate, incompletePredicate])
         fetchRequest.predicate = andPredicate
         
-        let sortDescriptor = NSSortDescriptor(key: "endDate", ascending: true)
+        let sortDescriptor = NSSortDescriptor(key: "endDate", ascending: false)
         fetchRequest.sortDescriptors = [sortDescriptor]
         
         do {
@@ -188,6 +199,8 @@ extension CoreDataService {
         }
     }
     
+    //MARK: - Sign in
+    
     private func getUserById(_ id: UUID) -> AuthModel? {
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "AuthModel")
         let idPredicate = NSPredicate(format: "id = %@", id as CVarArg)
@@ -207,6 +220,8 @@ extension CoreDataService {
         }
     }
     
+    //MARK: - Get task details method
+    
     func getTaskDetailsById(_ id: UUID) -> UserModel? {
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "UserModel")
         let idPredicate = NSPredicate(format: "id = %@", id as CVarArg)
@@ -225,6 +240,8 @@ extension CoreDataService {
             return nil
         }
     }
+    
+    //MARK: - Delete task method
     
     func deleteTaskById(_ id: UUID) -> Bool {
         defer {
@@ -247,6 +264,8 @@ extension CoreDataService {
             return false
         }
     }
+    
+    //MARK: - Update "isDone" method
     
     func updateTaskById(_ id: UUID) -> Bool {
         defer {

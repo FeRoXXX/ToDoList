@@ -36,12 +36,15 @@ final class HomeTabBarCoordinator: Coordinator {
         
     }
     
+    //MARK: - Prepare tab bar controller
+    
     func prepareTabBarController(with controllers: [UINavigationController]) {
         tabBarController.setViewControllers(controllers, animated: true)
         tabBarController.selectedIndex = TabBarPages.home.pageNumber()
         navigationController.viewControllers = [tabBarController]
     }
     
+    //MARK: - Prepare view controllers
     func prepareViewController(page: TabBarPages) -> UINavigationController {
         let navigationController = UINavigationController()
         

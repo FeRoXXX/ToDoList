@@ -26,11 +26,14 @@ final class SignUpViewModel {
     private(set) var navigateToSignInPublisher: PassthroughSubject<Void, Never> = .init()
     private(set) var navigateToHomePublisher: PassthroughSubject<UUID, Never> = .init()
     private(set) var showErrorPublisher: PassthroughSubject<String, Never> = .init()
+    private let authService: AuthService?
     private var bindings: Set<AnyCancellable> = []
     
     //MARK: - Initialization
     
-    init() {}
+    init(authService: AuthService?) {
+        self.authService = authService
+    }
 }
 
 //MARK: - Private extension
@@ -65,6 +68,7 @@ extension SignUpViewModel {
     
     func loadConstants() {
         prepareConstants()
+        bind()
     }
     
     //MARK: - Go to sign in view
@@ -73,24 +77,32 @@ extension SignUpViewModel {
         navigateToSignInPublisher.send()
     }
     
-    //MARK: - Check auth data()
+    //MARK: - Bind
     
-    func checkAuthData(_ fullName: String?, _ email: String?, _ password: String?) {
-        AuthService.shared.signUp(SignUpModel(fullName: fullName, email: email, password: password))
+    func bind() {
+        authService?.servicePublisher
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] error in
-                switch error {
-                case .failure(let value):
-                    if let value = value as? AuthService.Errors {
-                        self?.showErrorPublisher.send(value.message)
+            .sink { _ in
+                
+            } receiveValue: { [weak self] types in
+                switch types {
+                case .signUp(let data):
+                    self?.navigateToHomePublisher.send(data)
+                case .error(let error):
+                    if let error = error as? AuthService.Errors {
+                        self?.showErrorPublisher.send(error.message)
                     }
-                case .finished:
+                default:
                     break
                 }
-            } receiveValue: { [weak self] value in
-                self?.navigateToHomePublisher.send(value)
             }
             .store(in: &bindings)
 
+    }
+    
+    //MARK: - Sign up
+    
+    func signUp(fullName: String?, email: String?, password: String?) {
+        authService?.signUp(SignUpModel(fullName: fullName, email: email, password: password))
     }
 }

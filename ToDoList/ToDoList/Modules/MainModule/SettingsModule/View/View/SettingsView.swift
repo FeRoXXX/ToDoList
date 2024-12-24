@@ -7,10 +7,13 @@
 
 import UIKit
 import SnapKit
+import Combine
 
 final class SettingsView: UIView {
     
     //MARK: - Private properties
+    
+    private(set) var logoutButtonPublisher: PassthroughSubject<Void, Never> = PassthroughSubject()
     
     private var pageTitle: UILabel = {
         let label = UILabel()
@@ -29,6 +32,7 @@ final class SettingsView: UIView {
         configuration.title = "Logout"
         configuration.imagePadding = 12
         button.configuration = configuration
+        button.addTarget(self, action: #selector(logoutButtonAction), for: .touchUpInside)
         return button
     }()
     
@@ -92,6 +96,12 @@ private extension SettingsView {
             make.top.equalTo(settingsTableView.snp.bottom).offset(95)
             make.height.equalTo(42)
         }
+    }
+    
+    //MARK: - Button action
+    
+    @objc
+    func logoutButtonAction() {
         
     }
 }

@@ -25,11 +25,14 @@ final class SignInViewModel {
     private(set) var navigateToSignUpPublisher: PassthroughSubject<Void, Never> = .init()
     private(set) var navigateToHomePublisher: PassthroughSubject<UUID, Never> = .init()
     private(set) var showErrorPublisher: PassthroughSubject<String, Never> = .init()
+    private var authService: AuthService?
     private var bindings: Set<AnyCancellable> = []
     
     //MARK: - Initialization
     
-    init() {}
+    init(authService: AuthService?) {
+        self.authService = authService
+    }
 }
 
 //MARK: - Private extension
@@ -63,6 +66,7 @@ extension SignInViewModel {
     
     func loadConstants() {
         prepareConstants()
+        bind()
     }
     
     //MARK: - Go to sign in view
@@ -71,28 +75,36 @@ extension SignInViewModel {
         navigateToSignUpPublisher.send()
     }
     
-    //MARK: - Sign in function
+    //MARK: - Bind
     
-    func checkAuthData(email: String?, password: String?) {
-        //MARK: - FIXME Тут стакаются подписки
-        AuthService.shared.signIn(SignInModel(email: email, password: password))
-            .first()
+    func bind() {
+        authService?.servicePublisher
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] error in
-                switch error {
-                case .failure(let value):
-                    if let value = value as? AuthService.Errors {
-                        self?.showErrorPublisher.send(value.message)
-                    } else if let value = value as? CoreDataService.Errors {
-                        self?.showErrorPublisher.send(value.message)
+            .first()
+            .sink { _ in
+                
+            } receiveValue: { [weak self] types in
+                switch types {
+                case .signIn(let id):
+                    self?.navigateToHomePublisher.send(id)
+                case .error(let error):
+                    if let error = error as? AuthService.Errors {
+                        self?.showErrorPublisher.send(error.message)
+                    } else if let error = error as? CoreDataService.Errors {
+                        self?.showErrorPublisher.send(error.message)
                     }
-                case .finished:
+                default:
                     break
                 }
-            } receiveValue: { [weak self] value in
-                self?.navigateToHomePublisher.send(value)
             }
             .store(in: &bindings)
+
+    }
+    
+    //MARK: - Sign in
+    
+    func signIn(email: String?, password: String?) {
+        authService?.signIn(SignInModel(email: email, password: password))
     }
 }
 

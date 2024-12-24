@@ -12,13 +12,17 @@ final class MainCoordinator: Coordinator {
     
     //MARK: - Private properties
     
-    private var bindings: Set<AnyCancellable> = []
     private var firstOpenService: UserDefaultsService?
+    private var bindings: Set<AnyCancellable> = []
+    
+    //MARK: - Initialization
     
     init(navigationController: UINavigationController, firstOpenService: UserDefaultsService) {
         self.firstOpenService = firstOpenService
         super.init(navigationController: navigationController)
     }
+    
+    //MARK: - Override functions
     
     override func start() {
         print(FileManager.default.temporaryDirectory)
@@ -38,6 +42,8 @@ final class MainCoordinator: Coordinator {
 
 extension MainCoordinator {
     
+    //MARK: - Go to onbording
+    
     func goToOnboarding() {
         let coordinator = OnBoardingCoordinator(navigationController: navigationController)
         coordinator.didFinish
@@ -52,8 +58,10 @@ extension MainCoordinator {
         coordinator.start()
     }
     
+    //MARK: - Go to Authentication
+    
     func goToAuthentication() {
-        let coordinator = AuthenticationCoordinator(navigationController: navigationController)
+        let coordinator = AuthenticationCoordinator(navigationController: navigationController, authService: AuthService())
         coordinator.finishAuthenticationPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] value in
@@ -64,6 +72,8 @@ extension MainCoordinator {
         addChildCoordinator(coordinator)
         coordinator.start()
     }
+    
+    //MARK: - Go to home
     
     func goToHome(authenticationData: UUID) {
         let coordinator = HomeTabBarCoordinator(navigationController: navigationController, authenticationData: authenticationData)

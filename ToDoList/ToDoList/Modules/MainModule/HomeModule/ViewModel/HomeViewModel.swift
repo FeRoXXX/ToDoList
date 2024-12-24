@@ -92,6 +92,8 @@ extension HomeViewModel {
         profileDataService.getUserTasksByUserId(userId)
     }
     
+    //MARK: - Navigation functions
+    
     func navigateToDetails(for id: UUID) {
         navigateToTaskDetails.send(id)
     }

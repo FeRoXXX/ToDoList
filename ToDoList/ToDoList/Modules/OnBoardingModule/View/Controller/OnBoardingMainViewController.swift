@@ -165,9 +165,13 @@ private extension OnBoardingMainViewController {
         nextButtonTapped.send()
     }
     
+    //MARK: - Setup current page
+    
     func setupCurrentPage(_ page: Int) {
         pageControl.currentPage = page
     }
+    
+    //MARK: - Setup next button image
     
     func setupNextButtonImage(_ imageName: String) {
         if let image = UIImage(named: imageName) {
@@ -176,13 +180,6 @@ private extension OnBoardingMainViewController {
             nextViewButton.configuration?.image = UIImage(systemName: imageName)
         }
     }
-//    private func setupScrollViewDelegate() {
-//        for view in view.subviews {
-//            if let scrollView = view as? UIScrollView {
-//                scrollView.delegate = self
-//            }
-//        }
-//    }
 
 }
 
@@ -211,14 +208,4 @@ extension OnBoardingMainViewController: UIPageViewControllerDelegate, UIPageView
     }
 }
 
-//extension OnBoardingMainViewController: UIScrollViewDelegate {
-//    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-//        let offsetX = scrollView.contentOffset.x
-//        let width = scrollView.bounds.width
-//        
-//        
-//        let progress = offsetX / width
-//        pageControl.updateProgress(progress)
-//    }
-//}
 

@@ -55,6 +55,8 @@ final class ProfileDataService {
     
     private init() {}
     
+    //MARK: - Get email and full name by user id
+    
     func getEmailAndFullName(by id: UUID) {
         let result = CoreDataService.shared.getUserPublicData(by: id)
         
@@ -65,6 +67,8 @@ final class ProfileDataService {
             return
         }
     }
+    
+    //MARK: - Get all tasks by user id
     
     func getUserTasksByUserId(_ id: UUID) {
         
@@ -77,6 +81,8 @@ final class ProfileDataService {
             return
         }
     }
+    
+    //MARK: - Create new task
     
     func createTask(_ task: TaskModel) {
         guard let title = task.title,
@@ -97,6 +103,8 @@ final class ProfileDataService {
         }
     }
     
+    //MARK: - Get incomplete task by user id
+    
     func getUserIncompleteTasks(userId: UUID){
         let result = CoreDataService.shared.getSortedIncompleteTasks(by: userId)
         
@@ -108,6 +116,8 @@ final class ProfileDataService {
         }
     }
     
+    //MARK: - Get task detail by task id
+    
     func getTaskById(_ taskId: UUID)  {
         let result = CoreDataService.shared.getTaskDetailsById(taskId)
         
@@ -116,6 +126,8 @@ final class ProfileDataService {
         servicePublisher.send(.taskDetails(result))
     }
     
+    //MARK: - Delete task by id
+    
     func deleteTaskById(_ taskId: UUID) {
         let result = CoreDataService.shared.deleteTaskById(taskId)
         
@@ -123,6 +135,8 @@ final class ProfileDataService {
             servicePublisher.send(.deleteTaskResult)
         }
     }
+    
+    //MARK: - Update task by id
     
     func updateTaskById(_ taskId: UUID) {
         let result = CoreDataService.shared.updateTaskById(taskId)

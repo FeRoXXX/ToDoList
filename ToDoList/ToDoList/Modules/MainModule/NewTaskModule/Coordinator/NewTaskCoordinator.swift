@@ -10,6 +10,8 @@ import Combine
 
 final class NewTaskCoordinator: Coordinator {
     
+    //MARK: - Private properties
+    
     private var profileDataService: ProfileDataService
     private var authenticationKey: UUID
     private(set) var closeNewTaskModule: PassthroughSubject<Void, Never> = .init()

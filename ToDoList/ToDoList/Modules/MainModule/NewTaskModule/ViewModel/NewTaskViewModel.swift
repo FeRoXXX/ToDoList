@@ -46,6 +46,8 @@ private extension NewTaskViewModel {
         return dateFormatter.date(from: combinedString)
     }
     
+    //MARK: - Bind
+    
     func bind() {
         profileDataService.servicePublisher
             .receive(on: DispatchQueue.main)
@@ -72,10 +74,14 @@ private extension NewTaskViewModel {
 
 extension NewTaskViewModel {
     
+    //MARK: - Create new task
+    
     func createNewTask(_ task: NewTaskDataModel) {
         let endDate = combineDateAndTime(dateString: task.date, timeString: task.time)
         profileDataService.createTask(TaskModel(title: task.title, description: task.description, endDate: endDate, relationshipId: authenticationKey))
     }
+    
+    //MARK: - Cancel task creation
     
     func cancelTaskCreation() {
         cancelNewTaskModule.send()

@@ -48,6 +48,8 @@ final class HomeCoordinator: Coordinator {
 
 private extension HomeCoordinator {
     
+    //MARK: - Navigate to task details
+    
     func navigateToTaskDetails(with id: UUID) {
         navigationController.isNavigationBarHidden = true
         let coordinator = TaskDetailsCoordinator(navigationController: navigationController, taskId: id, profileService: profileService)
@@ -61,6 +63,8 @@ private extension HomeCoordinator {
         coordinator.start()
         addChildCoordinator(coordinator)
     }
+    
+    //MARK: - Finish details module
     
     func finishDetailsModule() {
         profileService.getUserTasksByUserId(authenticationKey)

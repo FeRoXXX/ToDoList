@@ -10,17 +10,23 @@ import Combine
 
 final class OnBoardingCoordinator: Coordinator {
     
-    private var bindings: Set<AnyCancellable> = []
+    //MARK: - Private properties
+    
     private(set) var didFinish: PassthroughSubject<Void, Never> = .init()
-    var pages: [OnBoardingViewController] = [OnBoardingViewController(),
+    private var pages: [OnBoardingViewController] = [OnBoardingViewController(),
                                              OnBoardingViewController(),
                                              OnBoardingViewController(),
                                              OnBoardingViewController()
     ]
+    private var bindings: Set<AnyCancellable> = []
+    
+    //MARK: - Initialization
     
     override init(navigationController: UINavigationController) {
         super.init(navigationController: navigationController)
     }
+    
+    //MARK: - Override functions
     
     override func start() {
         let viewModel = OnBoardingMainViewModel(totalPages: pages.count)

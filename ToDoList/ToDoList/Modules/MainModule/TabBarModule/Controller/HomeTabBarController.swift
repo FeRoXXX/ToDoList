@@ -9,7 +9,6 @@ import UIKit
 
 final class HomeTabBarController: UITabBarController {
     
-    
     //MARK: - Lifecycle
     
     override func viewDidLoad() {
@@ -21,6 +20,8 @@ final class HomeTabBarController: UITabBarController {
 //MARK: - Private extension
 
 private extension HomeTabBarController {
+    
+    //MARK: - UI initialization function
     
     func setupUI() {
         let tabBarAppearance = UITabBarAppearance()

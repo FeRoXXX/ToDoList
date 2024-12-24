@@ -180,6 +180,7 @@ private extension TaskDetailsView {
         button.layer.masksToBounds = false
     }
     
+    //MARK: - Buttons action
     @objc
     func backButtonTapped() {
         backButtonPublisher.send()

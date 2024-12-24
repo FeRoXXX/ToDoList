@@ -13,6 +13,7 @@ final class SettingsViewController: UIViewController {
     //MARK: - Private properties
     
     private var contentView = SettingsView()
+    private var bindings: Set<AnyCancellable> = []
     
     //MARK: - Lifecycle functions
     
@@ -40,7 +41,12 @@ private extension SettingsViewController {
         //MARK: - bind view to viewModel
         
         func bindViewToViewModel() {
-            
+            contentView.logoutButtonPublisher
+                .receive(on: DispatchQueue.main)
+                .sink { [weak self] _ in
+                    
+                }
+                .store(in: &bindings)
         }
         
         //MARK: - bind viewModel to view

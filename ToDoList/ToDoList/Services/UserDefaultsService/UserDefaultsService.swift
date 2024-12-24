@@ -13,6 +13,14 @@ final class UserDefaultsService {
     
     private let defaults = UserDefaults.standard
     
+    private var firstOpenKey: String {
+        return "isFirstOpen"
+    }
+    
+    private var alreadyAuthorizationKey: String {
+        return "alreadyAuthorized"
+    }
+    
     //MARK: - Initialization
     
     init() {}
@@ -22,21 +30,19 @@ final class UserDefaultsService {
 
 extension UserDefaultsService {
     
-    private var firstOpenKey: String {
-        return "isFirstOpen"
-    }
-    
-    private var alreadyAuthorizationKey: String {
-        return "alreadyAuthorized"
-    }
+    //MARK: - Fetch firstOpen state
     
     func fetchState() -> Bool {
         defaults.value(forKey: firstOpenKey) as? Bool ?? true
     }
     
+    //MARK: - Set firstOpen state
+    
     func set(isFirstOpen: Bool) {
         defaults.set(isFirstOpen, forKey: firstOpenKey)
     }
+    
+    //MARK: - Fetch authorization state
     
     func fetchAuthorizationState() -> UUID? {
         guard let value = defaults.value(forKey: alreadyAuthorizationKey) as? String,
@@ -46,9 +52,13 @@ extension UserDefaultsService {
         return id
     }
     
+    //MARK: - Set authorization state
+    
     func set(_ uuid: UUID) {
         defaults.set(uuid.uuidString, forKey: alreadyAuthorizationKey)
     }
+    
+    //MARK: - Delete authorization state
     
     func deleteAuthorizationState() {
         defaults.removeObject(forKey: alreadyAuthorizationKey)

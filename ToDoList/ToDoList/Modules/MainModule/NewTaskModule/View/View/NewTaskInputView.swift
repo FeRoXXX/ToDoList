@@ -176,6 +176,8 @@ private extension NewTaskInputView {
         }
     }
     
+    //MARK: - Keyboard actions
+    
     @objc func dateTextFieldDoneTapped() {
         if let datePicker = self.dateTextField.inputView as? UIDatePicker,
            datePicker.datePickerMode == .date {

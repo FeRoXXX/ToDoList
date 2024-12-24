@@ -30,6 +30,7 @@ final class TaskDetailsViewModel {
 
 private extension TaskDetailsViewModel {
     
+    //MARK: - Bind
     func bind() {
         profileDataService.servicePublisher
             .receive(on: DispatchQueue.main)
@@ -83,10 +84,14 @@ private extension TaskDetailsViewModel {
 
 extension TaskDetailsViewModel {
     
+    //MARK: - Load data function
+    
     func loadData() {
         bind()
         profileDataService.getTaskById(taskId)
     }
+    
+    //MARK: - binding function
     
     func deleteTaskById() {
         profileDataService.deleteTaskById(taskId)
