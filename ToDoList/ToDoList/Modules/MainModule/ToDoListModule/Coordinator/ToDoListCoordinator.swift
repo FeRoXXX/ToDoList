@@ -14,7 +14,8 @@ final class ToDoListCoordinator: Coordinator {
     
     private var authenticationKey: UUID
     private var profileDataService: ProfileDataService
-    private var bindings: Set<AnyCancellable> = []
+    private var newTaskSubscription: AnyCancellable?
+    private var newTaskCancelSubscription: AnyCancellable?
     
     //MARK: - Initialization
     
@@ -28,12 +29,11 @@ final class ToDoListCoordinator: Coordinator {
     
     override func start() {
         let viewModel = ToDoListViewModel(userId: authenticationKey, profileDataService: profileDataService)
-        viewModel.navigateToAddNew
+        newTaskSubscription = viewModel.navigateToAddNew
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 self?.routeToAddItem()
             }
-            .store(in: &bindings)
         
         let controller = ToDoListViewController(viewModel: viewModel)
         navigationController.setViewControllers([controller], animated: true)
@@ -42,9 +42,20 @@ final class ToDoListCoordinator: Coordinator {
     override func finish() {
         
     }
+}
+
+//MARK: - Private extension
+
+private extension ToDoListCoordinator {
     
     func routeToAddItem() {
-        let coordinator = NewNoteCoordinator(navigationController: navigationController)
+        let coordinator = NewTaskCoordinator(navigationController: navigationController, profileDataService: profileDataService, authenticationKey: authenticationKey)
+        newTaskCancelSubscription = coordinator.closeNewTaskModule
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.removeChild(coordinator)
+                self?.newTaskCancelSubscription = nil
+            }
         coordinator.start()
         addChildCoordinator(coordinator)
     }

@@ -72,16 +72,16 @@ final class ProfileDataService {
         guard let title = task.title,
               let description = task.description,
               let endDate = task.endDate,
-              let relationship = task.relationship else {
+              let relationshipId = task.relationshipId else {
             return Fail(error: Errors.emptyString)
                 .eraseToAnyPublisher()
         }
         
         let result = CoreDataService.shared.createTask(TaskRequestModel(title: title,
-                                                           description: description,
-                                                           endDate: endDate,
-                                                           isDone: task.isDone,
-                                                           relationship: relationship))
+                                                                        description: description,
+                                                                        endDate: endDate,
+                                                                        isDone: task.isDone,
+                                                                        relationshipId: relationshipId))
         return Result.Publisher(result)
             .eraseToAnyPublisher()
     }

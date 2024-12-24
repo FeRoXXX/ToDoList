@@ -64,26 +64,39 @@ extension UITableView {
     
     //MARK: - Update table view
     
-    func updateIndexPaths<T:Equatable>(oldValue: [[T]], data: [[T]]) {
+    func updateIndexPaths<T: Equatable>(oldValue: [[T]], data: [[T]]) {
         let indexPaths = calculateIndexPaths(oldValue: oldValue, value: data)
-        let nonEmptySectionsCount = data.filter { !$0.isEmpty }.count
-        
+
+        let oldNonEmptySectionsCount = oldValue.filter { !$0.isEmpty }.count
+        let newNonEmptySectionsCount = data.filter { !$0.isEmpty }.count
+
         self.beginUpdates()
-        if nonEmptySectionsCount > 1 {
-            self.reloadData()
-        } else {
-            if !indexPaths.inserted.isEmpty {
-                self.insertRows(at: indexPaths.inserted, with: .automatic)
+
+        if newNonEmptySectionsCount != oldNonEmptySectionsCount {
+            let oldSections = IndexSet(0..<oldNonEmptySectionsCount)
+            let newSections = IndexSet(0..<newNonEmptySectionsCount)
+
+            let insertedSections = newSections.subtracting(oldSections)
+            let deletedSections = oldSections.subtracting(newSections)
+
+            if !insertedSections.isEmpty {
+                self.insertSections(insertedSections, with: .automatic)
             }
-            
-            if !indexPaths.deleted.isEmpty {
-                self.deleteRows(at: indexPaths.deleted, with: .automatic)
-            }
-            
-            if !indexPaths.updated.isEmpty {
-                self.reloadRows(at: indexPaths.updated, with: .automatic)
+            if !deletedSections.isEmpty {
+                self.deleteSections(deletedSections, with: .automatic)
             }
         }
+
+        if !indexPaths.inserted.isEmpty {
+            self.insertRows(at: indexPaths.inserted, with: .automatic)
+        }
+        if !indexPaths.deleted.isEmpty {
+            self.deleteRows(at: indexPaths.deleted, with: .automatic)
+        }
+        if !indexPaths.updated.isEmpty {
+            self.reloadRows(at: indexPaths.updated, with: .automatic)
+        }
+
         self.endUpdates()
     }
     

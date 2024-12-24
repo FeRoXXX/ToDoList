@@ -1,5 +1,5 @@
 //
-//  NewNoteView.swift
+//  NewTaskView.swift
 //  ToDoList
 //
 //  Created by Александр Федоткин on 23.12.2024.
@@ -9,19 +9,19 @@ import UIKit
 import SnapKit
 import Combine
 
-final class NewNoteView: UIView {
+final class NewTaskView: UIView {
     
-    //MARK: - Private properties
+    //MARK: - Public properties
     
-    private let blurEffectView: UIVisualEffectView = {
+    let blurEffectView: UIVisualEffectView = {
         let blurEffect = UIBlurEffect(style: .systemMaterialLight)
         let view = UIVisualEffectView(effect: blurEffect)
         view.alpha = 0.4
         return view
     }()
     
-    private var contentView: NewNoteInputView = {
-        let view = NewNoteInputView()
+    var contentView: NewTaskInputView = {
+        let view = NewTaskInputView()
         view.backgroundColor = Colors.whiteColorFirst
         view.layer.cornerRadius = 20
         view.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
@@ -57,7 +57,7 @@ final class NewNoteView: UIView {
 
 //MARK: - Private extension
 
-private extension NewNoteView {
+private extension NewTaskView {
     
     //MARK: - UI initialization functions
     

@@ -72,13 +72,19 @@ extension CoreDataService {
         guard let userEntityDescription = NSEntityDescription.entity(forEntityName: "UserModel", in: context) else {
             return false
         }
-        let user = UserModel(entity: userEntityDescription, insertInto: context)
-        user.id = UUID()
-        user.title = taskData.title
-        user.noteDescription = taskData.description
-        user.endDate = taskData.endDate
-        user.isDone = taskData.isDone
-        user.relationship = taskData.relationship
+        
+        guard let user = getUserById(taskData.relationshipId) else {
+            return false
+        }
+        
+        let task = UserModel(entity: userEntityDescription, insertInto: context)
+        task.id = UUID()
+        task.title = taskData.title
+        task.noteDescription = taskData.description
+        task.endDate = taskData.endDate
+        task.isDone = taskData.isDone
+        user.id = taskData.relationshipId
+        task.relationship = user
         return true
     }
     
@@ -101,8 +107,9 @@ extension CoreDataService {
     func getSortedIncompleteTasks(by userId: UUID) -> Result<[UserModel], Error> {
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "UserModel")
         let relationshipPredicate = NSPredicate(format: "relationship.id = %@", userId as CVarArg)
-        let incompletePredicate = NSPredicate(format: "isDone = %@", false)
-        fetchRequest.predicate = relationshipPredicate
+        let incompletePredicate = NSPredicate(format: "isDone = %@", NSNumber(value: false))
+        let andPredicate = NSCompoundPredicate(type: .and, subpredicates: [relationshipPredicate, incompletePredicate])
+        fetchRequest.predicate = andPredicate
         
         let sortDescriptor = NSSortDescriptor(key: "endDate", ascending: true)
         fetchRequest.sortDescriptors = [sortDescriptor]
@@ -178,6 +185,25 @@ extension CoreDataService {
             return .success(userPublicData)
         } catch {
             return .failure(Errors.badDecode)
+        }
+    }
+    
+    private func getUserById(_ id: UUID) -> AuthModel? {
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "AuthModel")
+        let idPredicate = NSPredicate(format: "id = %@", id as CVarArg)
+        
+        fetchRequest.predicate = idPredicate
+        
+        do {
+            let results = try context.fetch(fetchRequest)
+            
+            guard let firstResult = results.first as? AuthModel else {
+                return nil
+            }
+            
+            return firstResult
+        } catch {
+            return nil
         }
     }
 }

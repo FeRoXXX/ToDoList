@@ -12,6 +12,6 @@ struct TaskRequestModel {
     let description: String
     let endDate: Date
     let isDone: Bool
-    let relationship: AuthModel
+    let relationshipId: UUID
 }
 

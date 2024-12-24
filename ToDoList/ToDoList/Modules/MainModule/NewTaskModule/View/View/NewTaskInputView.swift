@@ -1,5 +1,5 @@
 //
-//  NewNoteInputView.swift
+//  NewTaskInputView.swift
 //  ToDoList
 //
 //  Created by Александр Федоткин on 23.12.2024.
@@ -9,9 +9,14 @@ import UIKit
 import SnapKit
 import Combine
 
-final class NewNoteInputView: UIView {
+final class NewTaskInputView: UIView {
     
     //MARK: - Private properties
+    
+    private(set) var createNewTaskPublisher: PassthroughSubject<NewTaskDataModel, Never> = .init()
+    private(set) var cancelPublisher: PassthroughSubject<Void, Never> = .init()
+        
+    //MARK: - Public properties
     
     var taskTitleField: CustomTextField = {
         let textField = CustomTextField()
@@ -81,7 +86,7 @@ final class NewNoteInputView: UIView {
         return textField
     }()
     
-    var cancelButton: UIButton = {
+    lazy var cancelButton: UIButton = {
         let button = UIButton()
         var configuration = UIButton.Configuration.plain()
         configuration.background.backgroundColor = Colors.whiteColorFirst
@@ -94,10 +99,11 @@ final class NewNoteInputView: UIView {
         button.layer.borderWidth = 2
         button.layer.cornerRadius = 10
         button.layer.masksToBounds = true
+        button.addTarget(self, action: #selector(cancelCreateNewTask), for: .touchUpInside)
         return button
     }()
     
-    var createButton: UIButton = {
+    lazy var createButton: UIButton = {
         let button = UIButton()
         var configuration = UIButton.Configuration.plain()
         configuration.background.cornerRadius = 10
@@ -107,6 +113,7 @@ final class NewNoteInputView: UIView {
             .foregroundColor: Colors.whiteColorFirst
         ]))
         button.configuration = configuration
+        button.addTarget(self, action: #selector(createNewTaskButtonTapped), for: .touchUpInside)
         return button
     }()
     
@@ -126,7 +133,7 @@ final class NewNoteInputView: UIView {
 
 //MARK: - Private extension
 
-private extension NewNoteInputView {
+private extension NewTaskInputView {
     
     //MARK: - UI initialization functions
     
@@ -189,5 +196,20 @@ private extension NewNoteInputView {
             self.timeTextField.attributedText = NSAttributedString(string: dateFormatter.string(from: datePicker.date), attributes: [.font: UIFont(name: Fonts.poppinsRegular.rawValue, size: 16) ?? .systemFont(ofSize: 16), .foregroundColor: Colors.whiteColorSecond])
         }
         self.resignFirstResponder()
+    }
+    
+    //MARK: - Button actions
+    
+    @objc
+    func createNewTaskButtonTapped() {
+        createNewTaskPublisher.send(NewTaskDataModel(title: taskTitleField.text,
+                                                     description: descriptionTextView.text,
+                                                     date: dateTextField.text,
+                                                     time: timeTextField.text))
+    }
+    
+    @objc
+    func cancelCreateNewTask() {
+        cancelPublisher.send()
     }
 }
