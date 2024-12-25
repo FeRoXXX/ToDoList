@@ -13,7 +13,7 @@ final class MainCoordinator: Coordinator {
     //MARK: - Private properties
     
     private var firstOpenService: UserDefaultsService?
-    private var bindings: Set<AnyCancellable> = []
+    private var binding: AnyCancellable?
     
     //MARK: - Initialization
     
@@ -32,7 +32,6 @@ final class MainCoordinator: Coordinator {
         } else {
             if let data = firstOpenService.fetchAuthorizationState() {
                 goToHome(authenticationData: data)
-                self.firstOpenService = nil
             } else {
                 goToAuthentication()
             }
@@ -46,14 +45,14 @@ extension MainCoordinator {
     
     func goToOnboarding() {
         let coordinator = OnBoardingCoordinator(navigationController: navigationController)
-        coordinator.didFinish
+        binding = coordinator.didFinish
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 self?.removeChild(coordinator)
                 self?.firstOpenService?.set(isFirstOpen: false)
                 self?.start()
+                self?.removeChild(coordinator)
             }
-            .store(in: &bindings)
         addChildCoordinator(coordinator)
         coordinator.start()
     }
@@ -62,13 +61,13 @@ extension MainCoordinator {
     
     func goToAuthentication() {
         let coordinator = AuthenticationCoordinator(navigationController: navigationController, authService: AuthService())
-        coordinator.finishAuthenticationPublisher
+        binding = coordinator.finishAuthenticationPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] value in
                 self?.firstOpenService?.set(value)
                 self?.start()
+                self?.removeChild(coordinator)
             }
-            .store(in: &bindings)
         addChildCoordinator(coordinator)
         coordinator.start()
     }
@@ -78,6 +77,14 @@ extension MainCoordinator {
     func goToHome(authenticationData: UUID) {
         let coordinator = HomeTabBarCoordinator(navigationController: navigationController, authenticationData: authenticationData)
         addChildCoordinator(coordinator)
+        binding = coordinator.routeToAuthenticationPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                coordinator.finish()
+                self?.start()
+                self?.removeChild(coordinator)
+            }
+        
         coordinator.start()
     }
 }

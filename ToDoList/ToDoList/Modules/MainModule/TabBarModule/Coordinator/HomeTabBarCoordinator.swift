@@ -14,6 +14,8 @@ final class HomeTabBarCoordinator: Coordinator {
     
     private var tabBarController: HomeTabBarController = HomeTabBarController()
     private var authenticationData: UUID
+    private(set) var routeToAuthenticationPublisher: PassthroughSubject<Void, Never> = PassthroughSubject()
+    private var bindings: Set<AnyCancellable> = []
     
     //MARK: - Initialization
     
@@ -33,7 +35,8 @@ final class HomeTabBarCoordinator: Coordinator {
     }
     
     override func finish() {
-        
+        removeAllChildCoordinators()
+        bindings.removeAll()
     }
     
     //MARK: - Prepare tab bar controller
@@ -70,9 +73,16 @@ final class HomeTabBarCoordinator: Coordinator {
             coordinator.start()
             return coordinator.navigationController
         case .settings:
-            let coordinator = SettingsCoordinator(navigationController: navigationController)
+            let coordinator = SettingsCoordinator(navigationController: navigationController, authenticationKey: authenticationData, profileDataService: ProfileDataService.shared)
             addChildCoordinator(coordinator)
             coordinator.start()
+            coordinator.coordinatorFinishPublisher
+                .receive(on: DispatchQueue.main)
+                .sink { [weak self] _ in
+                    coordinator.finish()
+                    self?.routeToAuthenticationPublisher.send()
+                }
+                .store(in: &bindings)
             return coordinator.navigationController
         }
     }

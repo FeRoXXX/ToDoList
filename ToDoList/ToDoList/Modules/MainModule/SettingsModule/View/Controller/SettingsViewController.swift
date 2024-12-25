@@ -13,6 +13,7 @@ final class SettingsViewController: UIViewController {
     //MARK: - Private properties
     
     private var contentView = SettingsView()
+    private var viewModel: SettingsViewModel
     private var bindings: Set<AnyCancellable> = []
     
     //MARK: - Lifecycle functions
@@ -21,6 +22,19 @@ final class SettingsViewController: UIViewController {
         super.viewDidLoad()
         setupUI()
         bind()
+        viewModel.loadData()
+    }
+    
+    //MARK: - Initialization
+    
+    init(viewModel: SettingsViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 }
 
@@ -44,7 +58,7 @@ private extension SettingsViewController {
             contentView.logoutButtonPublisher
                 .receive(on: DispatchQueue.main)
                 .sink { [weak self] _ in
-                    
+                    self?.viewModel.logout()
                 }
                 .store(in: &bindings)
         }
@@ -52,7 +66,6 @@ private extension SettingsViewController {
         //MARK: - bind viewModel to view
         
         func bindViewModelToView() {
-            
         }
         
         bindViewModelToView()

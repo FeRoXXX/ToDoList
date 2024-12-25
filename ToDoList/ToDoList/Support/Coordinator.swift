@@ -45,6 +45,12 @@ extension Coordinator {
             children.remove(at: index)
         }
     }
+    
+    //MARK: - Remove all child
+    
+    func removeAllChildCoordinators() {
+        children.removeAll()
+    }
 }
 
 //MARK: - Equatable

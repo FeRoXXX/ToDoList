@@ -43,13 +43,18 @@ final class ProfileDataService {
         case createTasks
         case deleteTaskResult
         case updateTaskResult
+        case logoutResult
     }
     
     //MARK: - Static properties
     
     static var shared: ProfileDataService = ProfileDataService()
     
+    //MARK: - Private properties
+    
     private(set) var servicePublisher: PassthroughSubject<SubscribersType, Error> = PassthroughSubject()
+    private var userDefaultsService: UserDefaultsService = UserDefaultsService()
+    private var coreDataService: CoreDataService = CoreDataService.shared
     
     //MARK: - Initialization
     
@@ -144,5 +149,12 @@ final class ProfileDataService {
         if result {
             servicePublisher.send(.updateTaskResult)
         }
+    }
+    
+    //MARK: - Logout
+    
+    func logout(user: UUID) {
+        userDefaultsService.deleteAuthorizationState()
+        servicePublisher.send(.logoutResult)
     }
 }

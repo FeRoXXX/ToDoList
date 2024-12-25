@@ -102,6 +102,6 @@ private extension SettingsView {
     
     @objc
     func logoutButtonAction() {
-        
+        logoutButtonPublisher.send()
     }
 }
