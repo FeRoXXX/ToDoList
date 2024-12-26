@@ -16,13 +16,11 @@ final class ToDoListViewModel {
     private(set) var navigateToAddNew: PassthroughSubject<Void, Never> = .init()
     private(set) var routeToTaskDetails: PassthroughSubject<UUID, Never> = .init()
     private var bindings: Set<AnyCancellable> = []
-    private var userId: UUID
     private var profileDataService: ProfileDataService
     
     //MARK: - Initialization
     
-    init(userId: UUID, profileDataService: ProfileDataService) {
-        self.userId = userId
+    init(profileDataService: ProfileDataService) {
         self.profileDataService = profileDataService
     }
 }
@@ -41,7 +39,7 @@ extension ToDoListViewModel {
     
     func loadData() {
         bind()
-        profileDataService.getUserTasksByUserId(userId)
+        profileDataService.getUserTasks()
     }
     
     //MARK: - bind

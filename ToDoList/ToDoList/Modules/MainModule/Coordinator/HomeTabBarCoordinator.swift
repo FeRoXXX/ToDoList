@@ -13,14 +13,14 @@ final class HomeTabBarCoordinator: Coordinator {
     //MARK: - Private properties
     
     private var tabBarController: HomeTabBarController = HomeTabBarController()
-    private var authenticationData: UUID
+    private var profileDataService: ProfileDataService
     private(set) var routeToAuthenticationPublisher: PassthroughSubject<Void, Never> = PassthroughSubject()
     private var bindings: Set<AnyCancellable> = []
     
     //MARK: - Initialization
     
-    init(navigationController: UINavigationController, authenticationData: UUID) {
-        self.authenticationData = authenticationData
+    init(navigationController: UINavigationController, profileDataService: ProfileDataService) {
+        self.profileDataService = profileDataService
         super.init(navigationController: navigationController)
     }
     
@@ -36,6 +36,7 @@ final class HomeTabBarCoordinator: Coordinator {
     
     override func finish() {
         removeAllChildCoordinators()
+        tabBarController.removeFromParent()
         bindings.removeAll()
     }
     
@@ -58,22 +59,22 @@ final class HomeTabBarCoordinator: Coordinator {
         navigationController.view.layer.insertSublayer(Background.shared.getGradientLayer(frame: navigationController.view.frame), at: 0)
         switch page {
         case .home:
-            let coordinator = HomeCoordinator(navigationController: navigationController, authenticationKey: authenticationData, profileService: ProfileDataService.shared)
+            let coordinator = HomeCoordinator(navigationController: navigationController, profileService: profileDataService)
             addChildCoordinator(coordinator)
             coordinator.start()
             return coordinator.navigationController
         case .toDoList:
-            let coordinator = ToDoListCoordinator(navigationController: navigationController, authenticationKey: authenticationData, profileDataService: ProfileDataService.shared)
+            let coordinator = ToDoListCoordinator(navigationController: navigationController, profileDataService: profileDataService)
             addChildCoordinator(coordinator)
             coordinator.start()
             return coordinator.navigationController
         case .calendar:
-            let coordinator = CalendarCoordinator(navigationController: navigationController, profileDataService: ProfileDataService.shared, authenticationKey: authenticationData)
+            let coordinator = CalendarCoordinator(navigationController: navigationController, profileDataService: profileDataService)
             addChildCoordinator(coordinator)
             coordinator.start()
             return coordinator.navigationController
         case .settings:
-            let coordinator = SettingsCoordinator(navigationController: navigationController, authenticationKey: authenticationData, profileDataService: ProfileDataService.shared)
+            let coordinator = SettingsCoordinator(navigationController: navigationController, profileDataService: profileDataService)
             addChildCoordinator(coordinator)
             coordinator.start()
             coordinator.coordinatorFinishPublisher

@@ -41,6 +41,7 @@ final class NewTaskInputView: UIView {
             .font: UIFont(name: Fonts.poppinsRegular.rawValue, size: 16) ?? .systemFont(ofSize: 16),
             .foregroundColor: Colors.whiteColorSecond
         ])
+        textView.delegate = textView
         return textView
     }()
     

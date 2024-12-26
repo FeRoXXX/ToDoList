@@ -13,14 +13,12 @@ final class SettingsCoordinator: Coordinator {
     //MARK: - Private properties
     
     private var profileDataService: ProfileDataService
-    private var authenticationKey: UUID
     private(set) var coordinatorFinishPublisher: PassthroughSubject<Void, Never> = .init()
     private var bindings: Set<AnyCancellable> = []
     
     //MARK: - Initialization
     
-    init(navigationController: UINavigationController, authenticationKey: UUID, profileDataService: ProfileDataService) {
-        self.authenticationKey = authenticationKey
+    init(navigationController: UINavigationController, profileDataService: ProfileDataService) {
         self.profileDataService = profileDataService
         super.init(navigationController: navigationController)
     }
@@ -28,7 +26,7 @@ final class SettingsCoordinator: Coordinator {
     //MARK: - Override functions
     
     override func start() {
-        let viewModel = SettingsViewModel(profileDataService: profileDataService, authenticationKey: authenticationKey)
+        let viewModel = SettingsViewModel(profileDataService: profileDataService)
         let controller = SettingsViewController(viewModel: viewModel)
         viewModel.routeToAuthentication
             .receive(on: DispatchQueue.main)

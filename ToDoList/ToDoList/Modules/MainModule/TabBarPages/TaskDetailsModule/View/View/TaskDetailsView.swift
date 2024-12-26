@@ -56,6 +56,14 @@ final class TaskDetailsView: UIView {
         return label
     }()
     
+    private lazy var buttonsHorizontalStack: UIStackView = {
+        let stackView = UIStackView(arrangedSubviews: [doneButton, deleteButton])
+        stackView.axis = .horizontal
+        stackView.distribution = .equalSpacing
+        stackView.spacing = 72
+        return stackView
+    }()
+    
     private lazy var doneButton: UIButton = {
         let button = UIButton()
         configureButton(button: button, with: "Done", image: Images.TaskImages.complete)
@@ -107,8 +115,7 @@ private extension TaskDetailsView {
         addSubview(dateLabel)
         addSubview(separatorView)
         addSubview(descriptionLabel)
-        addSubview(doneButton)
-        addSubview(deleteButton)
+        addSubview(buttonsHorizontalStack)
     }
     
     func setupConstraints() {
@@ -140,19 +147,17 @@ private extension TaskDetailsView {
             make.top.equalTo(separatorView.snp.bottom).offset(25)
         }
         
-        doneButton.snp.makeConstraints { make in
-            make.leading.equalToSuperview().inset(80)
+        buttonsHorizontalStack.snp.makeConstraints { make in
+            make.height.equalTo(71)
             make.bottom.equalToSuperview().inset(182)
             make.top.greaterThanOrEqualTo(descriptionLabel.snp.bottom).offset(58)
-            make.height.equalTo(71)
+            make.centerX.equalToSuperview()
+        }
+        doneButton.snp.makeConstraints { make in
             make.width.equalTo(88)
         }
         
         deleteButton.snp.makeConstraints { make in
-            make.trailing.equalToSuperview().inset(80)
-            make.bottom.equalToSuperview().inset(182)
-            make.leading.lessThanOrEqualTo(doneButton.snp.trailing).offset(72)
-            make.height.equalTo(71)
             make.width.equalTo(88)
         }
         
@@ -208,6 +213,9 @@ extension TaskDetailsView {
         dateLabel.dateLabel.text = data.date
         dateLabel.timeLabel.text = data.time
         descriptionLabel.text = data.description
+        if data.isDone {
+            doneButton.isHidden = true
+        }
     }
     
     func setupCorrectButtonAction() -> PassthroughSubject<Void, Never> {

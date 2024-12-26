@@ -12,13 +12,13 @@ final class MainCoordinator: Coordinator {
     
     //MARK: - Private properties
     
-    private var firstOpenService: UserDefaultsService?
+    private var userDefaultsService: UserDefaultsService
     private var binding: AnyCancellable?
     
     //MARK: - Initialization
     
-    init(navigationController: UINavigationController, firstOpenService: UserDefaultsService) {
-        self.firstOpenService = firstOpenService
+    init(navigationController: UINavigationController, userDefaultsService: UserDefaultsService) {
+        self.userDefaultsService = userDefaultsService
         super.init(navigationController: navigationController)
     }
     
@@ -26,11 +26,10 @@ final class MainCoordinator: Coordinator {
     
     override func start() {
         print(FileManager.default.temporaryDirectory)
-        guard let firstOpenService else { return }
-        if firstOpenService.fetchState() {
+        if userDefaultsService.fetchState() {
             goToOnboarding()
         } else {
-            if let data = firstOpenService.fetchAuthorizationState() {
+            if let data = userDefaultsService.fetchAuthorizationState() {
                 goToHome(authenticationData: data)
             } else {
                 goToAuthentication()
@@ -48,7 +47,7 @@ extension MainCoordinator {
         binding = coordinator.didFinish
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
-                self?.firstOpenService?.set(isFirstOpen: false)
+                self?.userDefaultsService.set(isFirstOpen: false)
                 coordinator.finish()
                 self?.start()
                 self?.removeChild(coordinator)
@@ -60,12 +59,14 @@ extension MainCoordinator {
     //MARK: - Go to Authentication
     
     func goToAuthentication() {
-        let coordinator = AuthenticationCoordinator(navigationController: navigationController, authService: AuthService())
+        let coreDataService = CoreDataService()
+        let coordinator = AuthenticationCoordinator(navigationController: navigationController,
+                                                    authService: AuthService(coreDataService: coreDataService))
         binding = coordinator.finishAuthenticationPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] value in
                 coordinator.finish()
-                self?.firstOpenService?.set(value)
+                self?.userDefaultsService.set(value)
                 self?.start()
                 self?.removeChild(coordinator)
             }
@@ -76,7 +77,11 @@ extension MainCoordinator {
     //MARK: - Go to home
     
     func goToHome(authenticationData: UUID) {
-        let coordinator = HomeTabBarCoordinator(navigationController: navigationController, authenticationData: authenticationData)
+        let coreDataService = CoreDataService()
+        let profileDataService = ProfileDataService(authenticationKey: authenticationData,
+                                                    userDefaultService: userDefaultsService,
+                                                    coreDataService: coreDataService)
+        let coordinator = HomeTabBarCoordinator(navigationController: navigationController, profileDataService: profileDataService)
         addChildCoordinator(coordinator)
         binding = coordinator.routeToAuthenticationPublisher
             .receive(on: DispatchQueue.main)

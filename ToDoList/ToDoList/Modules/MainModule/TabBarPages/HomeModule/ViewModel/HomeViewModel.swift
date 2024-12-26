@@ -16,13 +16,11 @@ final class HomeViewModel {
     private(set) var pushUserProfileData: PassthroughSubject<UserPublicDataModel, Never> = .init()
     private(set) var navigateToTaskDetails: PassthroughSubject<UUID, Never> = .init()
     private var bindings: Set<AnyCancellable> = []
-    private var userId: UUID
     private var profileDataService: ProfileDataService
     
     //MARK: - Initialization
     
-    init(userId: UUID, profileDataService: ProfileDataService) {
-        self.userId = userId
+    init(profileDataService: ProfileDataService) {
         self.profileDataService = profileDataService
     }
 }
@@ -89,8 +87,8 @@ extension HomeViewModel {
     
     func loadData() {
         bind()
-        profileDataService.getEmailAndFullName(by: userId)
-        profileDataService.getUserTasksByUserId(userId)
+        profileDataService.getEmailAndFullName()
+        profileDataService.getUserTasks()
     }
     
     //MARK: - Navigation functions

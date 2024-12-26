@@ -13,7 +13,6 @@ final class TaskDetailsCoordinator: Coordinator {
     //MARK: - Private properties
     
     private let taskId: UUID
-    private var authenticationKey: UUID
     private let profileService: ProfileDataService
     private(set) var routeToBackPublisher: PassthroughSubject<Void, Never> = PassthroughSubject()
     private var routeToCorrectSubscribe: AnyCancellable?
@@ -22,10 +21,9 @@ final class TaskDetailsCoordinator: Coordinator {
     
     //MARK: - Initialization
     
-    init(navigationController: UINavigationController, taskId: UUID, profileService: ProfileDataService, authenticationKey: UUID) {
+    init(navigationController: UINavigationController, taskId: UUID, profileService: ProfileDataService) {
         self.profileService = profileService
         self.taskId = taskId
-        self.authenticationKey = authenticationKey
         super.init(navigationController: navigationController)
     }
     
@@ -50,8 +48,7 @@ final class TaskDetailsCoordinator: Coordinator {
     }
     
     override func finish() {
-//        profileService.getUserIncompleteTasks(userId: authenticationKey)
-        profileService.getUserTasksByUserId(authenticationKey)
+        profileService.getUserTasks()
         navigationController.popViewController(animated: false)
     }
 }
@@ -61,7 +58,7 @@ final class TaskDetailsCoordinator: Coordinator {
 private extension TaskDetailsCoordinator {
     
     func routeToCorrectTask() {
-        let coordinator = NewTaskCoordinator(navigationController: navigationController, profileDataService: profileService, authenticationKey: authenticationKey, taskId: taskId)
+        let coordinator = NewTaskCoordinator(navigationController: navigationController, profileDataService: profileService, taskId: taskId)
         newTaskCancelSubscription = coordinator.closeNewTaskModule
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in

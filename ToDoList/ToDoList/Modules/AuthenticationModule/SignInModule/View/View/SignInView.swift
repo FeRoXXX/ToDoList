@@ -74,6 +74,7 @@ final class SignInView: UIView {
         textField.addAttributedPlaceholder(TextConstants.passwordPlaceholder.rawValue)
         textField.backgroundColor = Colors.whiteColorFirst
         textField.layer.cornerRadius = 5
+        textField.isSecureTextEntry = true
         textField.layer.masksToBounds = true
         return textField
     }()
@@ -200,13 +201,43 @@ private extension SignInView {
     
     func setupKeyboardObserver() {
         keyboardObserver = KeyboardObserver(
-            onAppear: { [weak self] duration, options in
+            onAppear: { [weak self] keyboardHeight, duration, options in
                 guard let self = self else { return }
-                keyboardObserver?.adjustForKeyboardAppearance(view: self, degree: 2, duration: duration, options: options)
+                UIView.animate(withDuration: duration, delay: 0, options: options, animations: {
+                    self.logoImageView.snp.remakeConstraints { make in
+                        make.top.equalTo(self.safeAreaLayoutGuide.snp.top).inset(180 - keyboardHeight)
+                        make.height.width.equalTo(83)
+                        make.centerX.equalToSuperview()
+                    }
+                    
+                    self.anyAuthenticationMethod.snp.remakeConstraints { make in
+                        make.top.equalTo(self.signInButton.snp.bottom).offset(19)
+                        make.centerX.equalToSuperview()
+                        make.leading.trailing.greaterThanOrEqualToSuperview().inset(31)
+                        make.bottom.lessThanOrEqualToSuperview().inset(keyboardHeight)
+                    }
+                    
+                    self.layoutIfNeeded()
+                })
             },
             onDisappear: { [weak self] in
                 guard let self = self else { return }
-                keyboardObserver?.adjustForKeyboardAppearance(view: self, degree: 2, duration: 0.25, options: .curveEaseOut)
+                
+                UIView.animate(withDuration: 0.25) {
+                    self.logoImageView.snp.remakeConstraints { make in
+                        make.top.equalTo(self.safeAreaLayoutGuide.snp.top).inset(36)
+                        make.height.width.equalTo(83)
+                        make.centerX.equalToSuperview()
+                    }
+                    
+                    self.anyAuthenticationMethod.snp.remakeConstraints { make in
+                        make.top.equalTo(self.signInButton.snp.bottom).offset(19)
+                        make.centerX.equalToSuperview()
+                        make.leading.trailing.greaterThanOrEqualToSuperview().inset(31)
+                        make.bottom.lessThanOrEqualToSuperview().inset(188)
+                    }
+                    self.layoutIfNeeded()
+                }
             }
         )
     }

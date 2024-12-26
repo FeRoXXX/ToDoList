@@ -17,13 +17,11 @@ final class NewTaskViewModel {
     private(set) var pushTaskDetails: PassthroughSubject<TaskDetailsModel, Never> = .init()
     private var profileDataService: ProfileDataService
     private var taskId: UUID?
-    private var authenticationKey: UUID
     
     //MARK: - Initialization
     
-    init(profileDataService: ProfileDataService, authenticationKey: UUID, taskId: UUID? = nil) {
+    init(profileDataService: ProfileDataService, taskId: UUID? = nil) {
         self.profileDataService = profileDataService
-        self.authenticationKey = authenticationKey
         self.taskId = taskId
     }
 }
@@ -59,11 +57,8 @@ private extension NewTaskViewModel {
             } receiveValue: { [weak self] type in
                 switch type {
                 case .createTasks:
-                    if let authenticationKey = self?.authenticationKey {
-//                        self?.profileDataService.getUserIncompleteTasks(userId: authenticationKey)
-                        self?.profileDataService.getUserTasksByUserId(authenticationKey)
-                        self?.cancelNewTaskModule.send()
-                    }
+                    self?.profileDataService.getUserTasks()
+                    self?.cancelNewTaskModule.send()
                 default:
                     break
                 }
@@ -77,11 +72,12 @@ private extension NewTaskViewModel {
             } receiveValue: { [weak self] types in
                 switch types {
                 case .taskDetails(let data):
-                    let dateAndTime = data.endDate.formattedForDisplayDateAndTime()
+                    let dateAndTime = data.endDate.formattedForDisplayDateAndTimeInTextField()
                     self?.pushTaskDetails.send(TaskDetailsModel(title: data.title,
                                                                 date: dateAndTime.0,
                                                                 time: dateAndTime.1,
-                                                                description: data.noteDescription))
+                                                                description: data.noteDescription,
+                                                                isDone: data.isDone))
                 case .updateTaskResult:
                     self?.cancelNewTaskModule.send()
                 default:
@@ -113,13 +109,11 @@ extension NewTaskViewModel {
             profileDataService.updateTaskById(TaskModel(id: taskId,
                                                         title: task.title,
                                                         description: task.description,
-                                                        endDate: endDate,
-                                                        relationshipId: authenticationKey))
+                                                        endDate: endDate))
         } else {
             profileDataService.createTask(TaskModel(title: task.title,
                                                     description: task.description,
-                                                    endDate: endDate,
-                                                    relationshipId: authenticationKey))
+                                                    endDate: endDate))
         }
     }
     

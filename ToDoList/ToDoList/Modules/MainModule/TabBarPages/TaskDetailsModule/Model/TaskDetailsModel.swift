@@ -12,4 +12,5 @@ struct TaskDetailsModel {
     let date: String
     let time: String
     let description: String
+    let isDone: Bool
 }

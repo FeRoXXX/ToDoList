@@ -47,24 +47,25 @@ final class ProfileDataService {
         case logoutResult
     }
     
-    //MARK: - Static properties
-    
-    static var shared: ProfileDataService = ProfileDataService()
-    
     //MARK: - Private properties
     
     private(set) var servicePublisher: PassthroughSubject<SubscribersType, Error> = PassthroughSubject()
-    private var userDefaultsService: UserDefaultsService = UserDefaultsService()
-    private var coreDataService: CoreDataService = CoreDataService.shared
+    private var userDefaultsService: UserDefaultsService
+    private var coreDataService: CoreDataService
+    private var authenticationKey: UUID
     
     //MARK: - Initialization
     
-    private init() {}
+    init(authenticationKey: UUID, userDefaultService: UserDefaultsService, coreDataService: CoreDataService) {
+        self.authenticationKey = authenticationKey
+        self.userDefaultsService = userDefaultService
+        self.coreDataService = coreDataService
+    }
     
     //MARK: - Get email and full name by user id
     
-    func getEmailAndFullName(by id: UUID) {
-        let result = CoreDataService.shared.getUserPublicData(by: id)
+    func getEmailAndFullName() {
+        let result = coreDataService.getUserPublicData(by: authenticationKey)
         
         switch result {
         case .success(let success):
@@ -76,9 +77,9 @@ final class ProfileDataService {
     
     //MARK: - Get all tasks by user id
     
-    func getUserTasksByUserId(_ id: UUID) {
+    func getUserTasks() {
         
-        let result = CoreDataService.shared.getSortedTasks(by: id)
+        let result = coreDataService.getSortedTasks(by: authenticationKey)
         
         switch result {
         case .success(let success):
@@ -93,18 +94,17 @@ final class ProfileDataService {
     func createTask(_ task: TaskModel) {
         guard let title = task.title,
               let description = task.description,
-              let endDate = task.endDate,
-              let relationshipId = task.relationshipId else {
+              let endDate = task.endDate else {
             
             return
         }
         
-        let result = CoreDataService.shared.createTask(TaskRequestModel(id: task.id,
+        let result = coreDataService.createTask(TaskRequestModel(id: task.id,
                                                                         title: title,
                                                                         description: description,
                                                                         endDate: endDate,
                                                                         isDone: task.isDone,
-                                                                        relationshipId: relationshipId))
+                                                                        relationshipId: authenticationKey))
         if result {
             servicePublisher.send(.createTasks)
         }
@@ -113,7 +113,7 @@ final class ProfileDataService {
     //MARK: - Get task detail by task id
     
     func getTaskById(_ taskId: UUID)  {
-        let result = CoreDataService.shared.getTaskDetailsById(taskId)
+        let result = coreDataService.getTaskDetailsById(taskId)
         
         guard let result else { return }
         
@@ -123,7 +123,7 @@ final class ProfileDataService {
     //MARK: - Delete task by id
     
     func deleteTaskById(_ taskId: UUID) {
-        let result = CoreDataService.shared.deleteTaskById(taskId)
+        let result = coreDataService.deleteTaskById(taskId)
         
         if result {
             servicePublisher.send(.deleteTaskResult)
@@ -133,7 +133,7 @@ final class ProfileDataService {
     //MARK: - Update task status by id
     
     func updateTaskStatusById(_ taskId: UUID) {
-        let result = CoreDataService.shared.updateTaskStatusById(taskId)
+        let result = coreDataService.updateTaskStatusById(taskId)
         
         if result {
             servicePublisher.send(.updateTaskStatusResult)
@@ -142,21 +142,21 @@ final class ProfileDataService {
     
     //MARK: - Logout
     
-    func logout(user: UUID) {
+    func logout() {
         userDefaultsService.deleteAuthorizationState()
         servicePublisher.send(.logoutResult)
     }
     
     //MARK: - Get task by date
     
-    func getTaskByDate(date: Date, userId: UUID) {
+    func getTaskByDate(date: Date) {
         let calendar = Calendar.current
         let startOfDay = calendar.startOfDay(for: date)
         guard let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay) else {
             return
         }
         
-        let result = coreDataService.getTaskByDate(startOfDay, endOfDay, userId: userId)
+        let result = coreDataService.getTaskByDate(startOfDay, endOfDay, userId: authenticationKey)
         
         switch result {
         case .success(let success):
@@ -171,17 +171,16 @@ final class ProfileDataService {
     func updateTaskById(_ task: TaskModel) {
         guard let title = task.title,
               let description = task.description,
-              let endDate = task.endDate,
-              let relationshipId = task.relationshipId else {
+              let endDate = task.endDate else {
             return
         }
         
-        let result = CoreDataService.shared.updateTaskByData(TaskRequestModel(id: task.id,
-                                                                              title: title,
-                                                                              description: description,
-                                                                              endDate: endDate,
-                                                                              isDone: task.isDone,
-                                                                              relationshipId: relationshipId))
+        let result = coreDataService.updateTaskByData(TaskRequestModel(id: task.id,
+                                                                       title: title,
+                                                                       description: description,
+                                                                       endDate: endDate,
+                                                                       isDone: task.isDone,
+                                                                       relationshipId: authenticationKey))
         if result {
             servicePublisher.send(.updateTaskResult)
         }

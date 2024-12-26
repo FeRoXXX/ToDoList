@@ -32,10 +32,6 @@ final class CoreDataService {
         }
     }
     
-    //MARK: - Static properties
-    
-    static let shared = CoreDataService()
-    
     //MARK: - Private properties
     
     private var appDelegate: AppDelegate {
@@ -101,26 +97,6 @@ extension CoreDataService {
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "UserModel")
         let relationshipPredicate = NSPredicate(format: "relationship.id = %@", userId as CVarArg)
         fetchRequest.predicate = relationshipPredicate
-        
-        let sortDescriptor = NSSortDescriptor(key: "endDate", ascending: false)
-        fetchRequest.sortDescriptors = [sortDescriptor]
-        
-        do {
-            let data = (try context.fetch(fetchRequest) as? [UserModel]) ?? []
-            return .success(data)
-        } catch {
-            return .failure(Errors.badDecode)
-        }
-    }
-    
-    //MARK: - Get sorted incomplete task
-    
-    func getSortedIncompleteTasks(by userId: UUID) -> Result<[UserModel], Error> {
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "UserModel")
-        let relationshipPredicate = NSPredicate(format: "relationship.id = %@", userId as CVarArg)
-        let incompletePredicate = NSPredicate(format: "isDone = %@", NSNumber(value: false))
-        let andPredicate = NSCompoundPredicate(type: .and, subpredicates: [relationshipPredicate, incompletePredicate])
-        fetchRequest.predicate = andPredicate
         
         let sortDescriptor = NSSortDescriptor(key: "endDate", ascending: false)
         fetchRequest.sortDescriptors = [sortDescriptor]

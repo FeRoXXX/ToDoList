@@ -13,16 +13,14 @@ final class NewTaskCoordinator: Coordinator {
     //MARK: - Private properties
     
     private var profileDataService: ProfileDataService
-    private var authenticationKey: UUID
     private var taskId: UUID?
     private(set) var closeNewTaskModule: PassthroughSubject<Void, Never> = .init()
     private var bindings: Set<AnyCancellable> = []
     
     //MARK: - Initialization
     
-    init(navigationController: UINavigationController, profileDataService: ProfileDataService, authenticationKey: UUID, taskId: UUID? = nil) {
+    init(navigationController: UINavigationController, profileDataService: ProfileDataService, taskId: UUID? = nil) {
         self.profileDataService = profileDataService
-        self.authenticationKey = authenticationKey
         self.taskId = taskId
         super.init(navigationController: navigationController)
     }
@@ -30,7 +28,7 @@ final class NewTaskCoordinator: Coordinator {
     //MARK: - Override functions
     
     override func start() {
-        let viewModel = NewTaskViewModel(profileDataService: profileDataService, authenticationKey: authenticationKey, taskId: taskId)
+        let viewModel = NewTaskViewModel(profileDataService: profileDataService, taskId: taskId)
         let controller = NewTaskViewController(viewModel: viewModel)
         viewModel.cancelNewTaskModule
             .receive(on: DispatchQueue.main)

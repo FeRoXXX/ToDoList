@@ -42,10 +42,13 @@ final class AuthService {
     //MARK: - Private properties
     
     private(set) var servicePublisher: PassthroughSubject<SubscribersType, Error> = PassthroughSubject()
+    private var coreDataService: CoreDataService
     
     //MARK: - Initialization
     
-    init() {}
+    init(coreDataService: CoreDataService) {
+        self.coreDataService = coreDataService
+    }
     
     //MARK: - Sign up
     
@@ -76,13 +79,13 @@ final class AuthService {
             return
         }
         
-        let result = CoreDataService.shared.checkUserExist(by: SignInRequestModel(email: email, password: password))
+        let result = coreDataService.checkUserExist(by: SignInRequestModel(email: email, password: password))
         switch result {
         case .success(let success):
             if success {
                 servicePublisher.send(.error(Errors.alreadyExists))
             } else {
-                let result = CoreDataService.shared.createUser(SignUpRequestModel(email: email,
+                let result = coreDataService.createUser(SignUpRequestModel(email: email,
                                                                    fullName: fullName,
                                                                    password: password))
                 
@@ -94,7 +97,7 @@ final class AuthService {
                 }
             }
         case .failure(_):
-            let result = CoreDataService.shared.createUser(SignUpRequestModel(email: email,
+            let result = coreDataService.createUser(SignUpRequestModel(email: email,
                                                                fullName: fullName,
                                                                password: password))
             switch result {
@@ -128,7 +131,7 @@ final class AuthService {
             return
         }
         
-        let result = CoreDataService.shared.getUserID(by: SignInRequestModel(email: email, password: password))
+        let result = coreDataService.getUserID(by: SignInRequestModel(email: email, password: password))
         switch result {
         case .success(let success):
             servicePublisher.send(.signIn(success))

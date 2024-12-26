@@ -44,7 +44,8 @@ private extension TaskDetailsViewModel {
                     self?.pushTaskDetails.send(TaskDetailsModel(title: value.title,
                                                                 date: dateAndTime.0,
                                                                 time: dateAndTime.1,
-                                                                description: value.noteDescription))
+                                                                description: value.noteDescription,
+                                                                isDone: value.isDone))
                 default:
                     break
                 }

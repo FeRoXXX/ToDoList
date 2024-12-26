@@ -15,14 +15,12 @@ final class CalendarViewModel {
     private(set) var pushTableData: PassthroughSubject<[ToDoListModel], Never> = .init()
     private(set) var routeToDetails: PassthroughSubject<UUID, Never> = .init()
     private var profileDataService: ProfileDataService
-    private var authenticationKey: UUID
     private var bindings: Set<AnyCancellable> = []
     
     //MARK: - Initialization
     
-    init(profileDataService: ProfileDataService, authenticationKey: UUID) {
+    init(profileDataService: ProfileDataService) {
         self.profileDataService = profileDataService
-        self.authenticationKey = authenticationKey
     }
 }
 
@@ -67,7 +65,7 @@ extension CalendarViewModel {
     //MARK: - request tasks by date
     
     func requestTasks(_ date: Date) {
-        profileDataService.getTaskByDate(date: date, userId: authenticationKey)
+        profileDataService.getTaskByDate(date: date)
     }
     
     //MARK: - Navigate to detail

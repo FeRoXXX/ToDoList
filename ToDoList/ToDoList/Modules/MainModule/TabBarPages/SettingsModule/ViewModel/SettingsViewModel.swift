@@ -12,16 +12,14 @@ final class SettingsViewModel {
     
     //MARK: - Private properties
     
-    private let authenticationKey: UUID
     private let profileDataService: ProfileDataService
     private(set) var routeToAuthentication: PassthroughSubject<Void, Never> = .init()
     private var bindings: Set<AnyCancellable> = []
     
     //MARK: - Initialization
     
-    init(profileDataService: ProfileDataService, authenticationKey: UUID) {
+    init(profileDataService: ProfileDataService) {
         self.profileDataService = profileDataService
-        self.authenticationKey = authenticationKey
     }
 }
 
@@ -60,7 +58,7 @@ extension SettingsViewModel {
     //MARK: - binding function
     
     func logout() {
-        profileDataService.logout(user: authenticationKey)
+        profileDataService.logout()
     }
 }
 

@@ -205,6 +205,19 @@ private extension SignUpView {
         }
     }
     
+    //MARK: - Text field creation
+    
+    private func createTextField(placeholder: String, image: UIImage) -> CustomTextField {
+        let textField = CustomTextField()
+        textField.addImage(image, imageDirection: .left)
+        textField.attributesForPlaceholder = [.font: UIFont(name: Fonts.poppinsRegular.rawValue, size: 18) ?? .systemFont(ofSize: 18), .foregroundColor: Colors.blackColorThird]
+        textField.backgroundColor = Colors.whiteColorFirst
+        textField.addAttributedPlaceholder(placeholder)
+        textField.layer.cornerRadius = 5
+        textField.layer.masksToBounds = true
+        return textField
+    }
+    
     //MARK: - Button action
     
     @objc
@@ -214,13 +227,43 @@ private extension SignUpView {
     
     func setupKeyboardObserver() {
         keyboardObserver = KeyboardObserver(
-            onAppear: { [weak self] duration, options in
+            onAppear: { [weak self] keyboardHeight, duration, options in
                 guard let self = self else { return }
-                keyboardObserver?.adjustForKeyboardAppearance(view: self, degree: 2, duration: duration, options: options)
+                UIView.animate(withDuration: duration, delay: 0, options: options, animations: {
+                    self.logoImageView.snp.remakeConstraints { make in
+                        make.top.equalTo(self.safeAreaLayoutGuide.snp.top).inset(180 - keyboardHeight)
+                        make.height.width.equalTo(83)
+                        make.centerX.equalToSuperview()
+                    }
+                    
+                    self.anyAuthenticationMethod.snp.remakeConstraints { make in
+                        make.top.equalTo(self.signUpButton.snp.bottom).offset(19)
+                        make.centerX.equalToSuperview()
+                        make.leading.trailing.greaterThanOrEqualToSuperview().inset(31)
+                        make.bottom.equalToSuperview().inset(keyboardHeight)
+                    }
+                    
+                    self.layoutIfNeeded()
+                })
             },
             onDisappear: { [weak self] in
                 guard let self = self else { return }
-                keyboardObserver?.adjustForKeyboardAppearance(view: self, degree: 2, duration: 0.25, options: .curveEaseOut)
+                
+                UIView.animate(withDuration: 0.25) {
+                    self.logoImageView.snp.remakeConstraints { make in
+                        make.top.equalTo(self.safeAreaLayoutGuide.snp.top).inset(36)
+                        make.height.width.equalTo(83)
+                        make.centerX.equalToSuperview()
+                    }
+                    
+                    self.anyAuthenticationMethod.snp.remakeConstraints { make in
+                        make.top.equalTo(self.signUpButton.snp.bottom).offset(19)
+                        make.centerX.equalToSuperview()
+                        make.leading.trailing.greaterThanOrEqualToSuperview().inset(31)
+                        make.bottom.equalToSuperview().inset(188)
+                    }
+                    self.layoutIfNeeded()
+                }
             }
         )
     }

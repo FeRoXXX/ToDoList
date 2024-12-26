@@ -12,23 +12,21 @@ final class HomeCoordinator: Coordinator {
     
     //MARK: - Private properties
     
-    private let authenticationKey: UUID
     private let profileService: ProfileDataService
     private var routeToBackSubscription: AnyCancellable?
     private var bindings: Set<AnyCancellable> = []
     
     //MARK: - Initialization
     
-    init(navigationController: UINavigationController, authenticationKey: UUID, profileService: ProfileDataService) {
+    init(navigationController: UINavigationController, profileService: ProfileDataService) {
         self.profileService = profileService
-        self.authenticationKey = authenticationKey
         super.init(navigationController: navigationController)
     }
     
     //MARK: - Override functions
     
     override func start() {
-        let viewModel = HomeViewModel(userId: authenticationKey, profileDataService: profileService)
+        let viewModel = HomeViewModel(profileDataService: profileService)
         let controller = HomeViewController(viewModel: viewModel)
         viewModel.navigateToTaskDetails
             .receive(on: DispatchQueue.main)
@@ -52,7 +50,7 @@ private extension HomeCoordinator {
     
     func navigateToTaskDetails(with id: UUID) {
         navigationController.isNavigationBarHidden = true
-        let coordinator = TaskDetailsCoordinator(navigationController: navigationController, taskId: id, profileService: profileService, authenticationKey: authenticationKey)
+        let coordinator = TaskDetailsCoordinator(navigationController: navigationController, taskId: id, profileService: profileService)
         routeToBackSubscription = coordinator.routeToBackPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in

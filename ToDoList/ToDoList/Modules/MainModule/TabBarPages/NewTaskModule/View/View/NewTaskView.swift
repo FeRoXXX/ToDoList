@@ -79,13 +79,23 @@ private extension NewTaskView {
     
     private func setupKeyboardObserver() {
          keyboardObserver = KeyboardObserver(
-             onAppear: { [weak self] animationDuration, options in
+             onAppear: { [weak self] keyboardHeight, animationDuration, options in
                  guard let self else { return }
-                 keyboardObserver?.adjustForKeyboardAppearance(view: self, duration: animationDuration, options: options)
+                 UIView.animate(withDuration: animationDuration, delay: 0, options: options, animations: {
+                     self.contentView.snp.remakeConstraints { make in
+                         make.bottom.equalToSuperview().inset(keyboardHeight)
+                         make.leading.trailing.equalToSuperview()
+                     }
+                 })
              },
              onDisappear: { [weak self] in
                  guard let self else { return }
-                 keyboardObserver?.adjustForKeyboardAppearance(view: self, duration: 0.25, options: .curveEaseOut)
+                 UIView.animate(withDuration: 0.25) {
+                     self.contentView.snp.remakeConstraints { make in
+                         make.bottom.equalToSuperview()
+                         make.leading.trailing.equalToSuperview()
+                     }
+                 }
              }
          )
      }

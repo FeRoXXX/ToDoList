@@ -15,21 +15,19 @@ final class CalendarCoordinator: Coordinator {
     private(set) var routeToBackSubscription: AnyCancellable?
     private(set) var routeToDetailsSubscription: AnyCancellable?
     private var profileDataService: ProfileDataService
-    private var authenticationKey: UUID
     private var bindings: Set<AnyCancellable> = []
     
     //MARK: - Initialization
     
-    init(navigationController: UINavigationController, profileDataService: ProfileDataService, authenticationKey: UUID) {
+    init(navigationController: UINavigationController, profileDataService: ProfileDataService) {
         self.profileDataService = profileDataService
-        self.authenticationKey = authenticationKey
         super.init(navigationController: navigationController)
     }
     
     //MARK: - Override functions
     
     override func start() {
-        let viewModel = CalendarViewModel(profileDataService: profileDataService, authenticationKey: authenticationKey)
+        let viewModel = CalendarViewModel(profileDataService: profileDataService)
         let controller = CalendarViewController(viewModel: viewModel)
         routeToDetailsSubscription = viewModel.routeToDetails
             .receive(on: DispatchQueue.main)
@@ -51,7 +49,7 @@ private extension CalendarCoordinator {
     
     func routeToTaskDetails(taskId: UUID) {
         navigationController.isNavigationBarHidden = true
-        let coordinator = TaskDetailsCoordinator(navigationController: navigationController, taskId: taskId, profileService: profileDataService, authenticationKey: authenticationKey)
+        let coordinator = TaskDetailsCoordinator(navigationController: navigationController, taskId: taskId, profileService: profileDataService)
         coordinator.start()
         routeToBackSubscription = coordinator.routeToBackPublisher
             .receive(on: DispatchQueue.main)

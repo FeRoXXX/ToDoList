@@ -12,7 +12,6 @@ final class ToDoListCoordinator: Coordinator {
     
     //MARK: - Private properties
     
-    private var authenticationKey: UUID
     private var profileDataService: ProfileDataService
     private var newTaskSubscription: AnyCancellable?
     private var newTaskCancelSubscription: AnyCancellable?
@@ -21,8 +20,7 @@ final class ToDoListCoordinator: Coordinator {
     
     //MARK: - Initialization
     
-    init(navigationController: UINavigationController, authenticationKey: UUID, profileDataService: ProfileDataService) {
-        self.authenticationKey = authenticationKey
+    init(navigationController: UINavigationController, profileDataService: ProfileDataService) {
         self.profileDataService = profileDataService
         super.init(navigationController: navigationController)
     }
@@ -30,7 +28,7 @@ final class ToDoListCoordinator: Coordinator {
     //MARK: - Override functions
     
     override func start() {
-        let viewModel = ToDoListViewModel(userId: authenticationKey, profileDataService: profileDataService)
+        let viewModel = ToDoListViewModel(profileDataService: profileDataService)
         newTaskSubscription = viewModel.navigateToAddNew
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
@@ -56,7 +54,7 @@ final class ToDoListCoordinator: Coordinator {
 private extension ToDoListCoordinator {
     
     func routeToAddItem() {
-        let coordinator = NewTaskCoordinator(navigationController: navigationController, profileDataService: profileDataService, authenticationKey: authenticationKey)
+        let coordinator = NewTaskCoordinator(navigationController: navigationController, profileDataService: profileDataService)
         newTaskCancelSubscription = coordinator.closeNewTaskModule
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
@@ -69,7 +67,7 @@ private extension ToDoListCoordinator {
     
     func routeToTaskDetails(taskId: UUID) {
         navigationController.isNavigationBarHidden = true
-        let coordinator = TaskDetailsCoordinator(navigationController: navigationController, taskId: taskId, profileService: profileDataService, authenticationKey: authenticationKey)
+        let coordinator = TaskDetailsCoordinator(navigationController: navigationController, taskId: taskId, profileService: profileDataService)
         coordinator.start()
         routeToBackSubscription = coordinator.routeToBackPublisher
             .receive(on: DispatchQueue.main)
