@@ -85,7 +85,7 @@ extension CoreDataService {
         }
         
         let task = UserModel(entity: userEntityDescription, insertInto: context)
-        task.id = UUID()
+        task.id = taskData.id
         task.title = taskData.title
         task.noteDescription = taskData.description
         task.endDate = taskData.endDate
@@ -267,7 +267,7 @@ extension CoreDataService {
     
     //MARK: - Update "isDone" method
     
-    func updateTaskById(_ id: UUID) -> Bool {
+    func updateTaskStatusById(_ id: UUID) -> Bool {
         defer {
             appDelegate.saveContext()
         }
@@ -285,6 +285,63 @@ extension CoreDataService {
             firstResult.setValue(true, forKey: "isDone")
             return true
         } catch {
+            return false
+        }
+    }
+    
+    //MARK: - Get task by date
+    
+    func getTaskByDate(_ startDay: Date, _ endDay: Date, userId: UUID) -> Result<[UserModel], Error> {
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "UserModel")
+        
+        let relationshipPredicate = NSPredicate(format: "relationship.id = %@", userId as CVarArg)
+        let datePredicate = NSPredicate(format: "endDate >= %@ AND endDate < %@", startDay as CVarArg, endDay as CVarArg)
+        let andPredicate = NSCompoundPredicate(type: .and, subpredicates: [relationshipPredicate, datePredicate])
+        fetchRequest.predicate = andPredicate
+        
+        let sortDescriptor = NSSortDescriptor(key: "endDate", ascending: false)
+        fetchRequest.sortDescriptors = [sortDescriptor]
+        
+        do {
+            let data = (try context.fetch(fetchRequest) as? [UserModel]) ?? []
+            return .success(data)
+        } catch {
+            return .failure(Errors.badDecode)
+        }
+    }
+    
+    //MARK: - Update task by data
+    
+    func updateTaskByData(_ taskData: TaskRequestModel) -> Bool {
+        defer {
+            appDelegate.saveContext()
+        }
+        
+        let fetchRequest: NSFetchRequest<UserModel> = UserModel.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "id == %@", taskData.id as CVarArg)
+        
+        do {
+            let tasks = try context.fetch(fetchRequest)
+            
+            guard let taskToUpdate = tasks.first else {
+                return false
+            }
+            
+            taskToUpdate.title = taskData.title
+            taskToUpdate.noteDescription = taskData.description
+            taskToUpdate.endDate = taskData.endDate
+            taskToUpdate.isDone = taskData.isDone
+            
+            if taskToUpdate.relationship.id != taskData.relationshipId {
+                guard let user = getUserById(taskData.relationshipId) else {
+                    return false
+                }
+                taskToUpdate.relationship = user
+            }
+            
+            return true
+        } catch {
+            print("Error updating task: \(error.localizedDescription)")
             return false
         }
     }

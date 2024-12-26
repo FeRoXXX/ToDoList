@@ -24,11 +24,6 @@ final class SignUpViewController: UIViewController {
         bind()
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        viewModel.loadConstants()
-    }
-    
     //MARK: - Initialization
     
     init(viewModel: SignUpViewModel) {
@@ -78,12 +73,6 @@ private extension SignUpViewController {
         //MARK: - Bind viewModel to view
         
         func bindViewModelToView() {
-            viewModel.pushStaticTextPublisher
-                .receive(on: DispatchQueue.main)
-                .sink { [weak self] value in
-                    self?.contentView.setupConstants(value)
-                }
-                .store(in: &bindings)
             
             viewModel.showErrorPublisher
                 .receive(on: DispatchQueue.main)

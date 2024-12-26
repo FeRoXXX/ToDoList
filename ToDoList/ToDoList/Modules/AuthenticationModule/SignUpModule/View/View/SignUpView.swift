@@ -11,26 +11,41 @@ import Combine
 
 final class SignUpView: UIView {
     
+    enum TextConstants: String {
+        case title = "Welcome to DO IT"
+        case support = "create an account and Join us now!"
+        case fullNamePlaceholder = "Full name"
+        case emailPlaceholder = "E-mail"
+        case passwordPlaceholder = "Password"
+        case signUpButtonTitle = "Sign up"
+        case additionalInfo = "Already have an account? sign in"
+    }
+    
     //MARK: - Private properties
     
     private(set) var textDidTapped: PassthroughSubject<Void, Never> = .init()
     private(set) var signUpDidTapped: PassthroughSubject<(fullName: String?, email: String?, password: String?), Never> = .init()
+    private var keyboardObserver: KeyboardObserver?
     
     private let logoImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = .applicationLogo
+        imageView.image = Images.appImages.appLogo
         return imageView
     }()
     
     private let titleLabel: UILabel = {
         let label = UILabel()
+        label.attributedText = TextConstants.title.rawValue.toAttributedString(highlighting: "DO IT",
+                                                                               defaultFont: .init(name: Fonts.poppinsMedium.rawValue, size: 25),
+                                                                               highlightedFont: .init(name: Fonts.darumaDropOne.rawValue, size: 25))
         return label
     }()
     
     private let supportLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 18, weight: .medium)
-        label.textColor = .white
+        label.font = UIFont(name: Fonts.poppinsMedium.rawValue, size: 18)
+        label.textColor = Colors.whiteColorFirst
+        label.text = TextConstants.support.rawValue
         return label
     }()
     
@@ -43,9 +58,10 @@ final class SignUpView: UIView {
     
     private var fullNameTextField: CustomTextField = {
         let textField = CustomTextField()
-        textField.addImage(Images.fullName, imageDirection: .left)
+        textField.addImage(Images.TextFieldImages.fullName, imageDirection: .left)
         textField.attributesForPlaceholder = [.font: UIFont(name: Fonts.poppinsRegular.rawValue, size: 18) ?? .systemFont(ofSize: 18), .foregroundColor: Colors.blackColorThird]
-        textField.backgroundColor = .white
+        textField.backgroundColor = Colors.whiteColorFirst
+        textField.addAttributedPlaceholder(TextConstants.fullNamePlaceholder.rawValue)
         textField.layer.cornerRadius = 5
         textField.layer.masksToBounds = true
         return textField
@@ -53,9 +69,10 @@ final class SignUpView: UIView {
     
     private var emailTextField: CustomTextField = {
         let textField = CustomTextField()
-        textField.addImage(Images.email, imageDirection: .left)
+        textField.addImage(Images.TextFieldImages.email, imageDirection: .left)
         textField.attributesForPlaceholder = [.font: UIFont(name: Fonts.poppinsRegular.rawValue, size: 18) ?? .systemFont(ofSize: 18), .foregroundColor: Colors.blackColorThird]
-        textField.backgroundColor = .white
+        textField.backgroundColor = Colors.whiteColorFirst
+        textField.addAttributedPlaceholder(TextConstants.emailPlaceholder.rawValue)
         textField.layer.cornerRadius = 5
         textField.layer.masksToBounds = true
         return textField
@@ -63,10 +80,12 @@ final class SignUpView: UIView {
     
     private var passwordTextField: CustomTextField = {
         let textField = CustomTextField()
-        textField.addImage(Images.password, imageDirection: .left)
+        textField.addImage(Images.TextFieldImages.password, imageDirection: .left)
         textField.attributesForPlaceholder = [.font: UIFont(name: Fonts.poppinsRegular.rawValue, size: 18) ?? .systemFont(ofSize: 18), .foregroundColor: Colors.blackColorThird]
-        textField.backgroundColor = .white
+        textField.backgroundColor = Colors.whiteColorFirst
+        textField.addAttributedPlaceholder(TextConstants.passwordPlaceholder.rawValue)
         textField.layer.cornerRadius = 5
+        textField.isSecureTextEntry = true
         textField.layer.masksToBounds = true
         return textField
     }()
@@ -74,17 +93,26 @@ final class SignUpView: UIView {
     private lazy var signUpButton: UIButton = {
         let button = UIButton()
         var configuration = UIButton.Configuration.plain()
-        configuration.background.backgroundColor = #colorLiteral(red: 0.05490196078, green: 0.6470588235, blue: 0.9137254902, alpha: 1)
+        configuration.background.backgroundColor = Colors.lightBlueThird
         configuration.background.cornerRadius = 10
-        configuration.baseForegroundColor = .white
+        configuration.baseForegroundColor = Colors.whiteColorFirst
         button.configuration = configuration
+        button.setTitle(TextConstants.signUpButtonTitle.rawValue, for: .normal)
         button.addTarget(self, action: #selector(signUpButtonAction), for: .touchUpInside)
         return button
     }()
     
-    private var anyAuthenticationMethod: UILabel = {
+    private lazy var anyAuthenticationMethod: UILabel = {
         let label = UILabel()
-        label.backgroundColor = .clear
+        label.backgroundColor = Colors.clearColor
+        label.attributedText = TextConstants.additionalInfo.rawValue.toAttributedString(highlighting: "sign in",
+                                                                                        defaultFont: .init(name: Fonts.poppinsMedium.rawValue, size: 14),
+                                                                                        highlightedFont: .init(name: Fonts.poppinsMedium.rawValue, size: 14),
+                                                                                        alignment: .center,
+                                                                                        additionalColor: Colors.lightBlueSecond)
+        label.addRangeGesture(stringRange: "sign in") { [weak self] in
+            self?.textDidTapped.send()
+        }
         return label
     }()
     
@@ -93,6 +121,7 @@ final class SignUpView: UIView {
     init() {
         super.init(frame: .zero)
         setupUI()
+        setupKeyboardObserver()
     }
     
     @available(*, unavailable)
@@ -105,6 +134,10 @@ final class SignUpView: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
         layer.insertSublayer(Background.shared.getGradientLayer(frame: frame), at: 0)
+    }
+    
+    deinit {
+        keyboardObserver = nil
     }
 }
 
@@ -178,24 +211,17 @@ private extension SignUpView {
     func signUpButtonAction() {
         signUpDidTapped.send((fullNameTextField.text, emailTextField.text, passwordTextField.text))
     }
-}
-
-//MARK: - Public extension
-
-extension SignUpView {
     
-    //MARK: - Initialization text constants
-    
-    func setupConstants(_ data: SignUpStaticText) {
-        titleLabel.attributedText = data.title
-        supportLabel.text = data.support
-        emailTextField.addAttributedPlaceholder(data.emailPlaceholder)
-        fullNameTextField.addAttributedPlaceholder(data.fullNamePlaceholder)
-        passwordTextField.addAttributedPlaceholder(data.passwordPlaceholder)
-        signUpButton.configuration?.title = data.signUpButtonTitle
-        anyAuthenticationMethod.attributedText = data.additionalInfo
-        anyAuthenticationMethod.addRangeGesture(stringRange: "sign in") { [weak self] in
-            self?.textDidTapped.send()
-        }
+    func setupKeyboardObserver() {
+        keyboardObserver = KeyboardObserver(
+            onAppear: { [weak self] duration, options in
+                guard let self = self else { return }
+                keyboardObserver?.adjustForKeyboardAppearance(view: self, degree: 2, duration: duration, options: options)
+            },
+            onDisappear: { [weak self] in
+                guard let self = self else { return }
+                keyboardObserver?.adjustForKeyboardAppearance(view: self, degree: 2, duration: 0.25, options: .curveEaseOut)
+            }
+        )
     }
 }

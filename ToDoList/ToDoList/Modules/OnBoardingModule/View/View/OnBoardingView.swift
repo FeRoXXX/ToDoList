@@ -20,7 +20,7 @@ final class OnBoardingView: UIView {
     
     private var pageTextLabel: UILabel = {
         let label = UILabel()
-        label.textColor = .white
+        label.textColor = Colors.whiteColorFirst
         label.numberOfLines = 0
         label.textAlignment = .center
         label.font = .init(name: Fonts.poppinsMedium.rawValue, size: 20)

@@ -11,26 +11,40 @@ import Combine
 
 final class SignInView: UIView {
     
+    enum TextConstants: String {
+        case title = "Welcome Back to DO IT "
+        case support = "Have an other productive day !"
+        case emailPlaceholder = "E-mail"
+        case passwordPlaceholder = "Password"
+        case signUpButtonTitle = "Sign in"
+        case additionalInfo = "Don’t have an account? sign up"
+    }
+    
     //MARK: - Private properties
     
     private(set) var textDidTapped: PassthroughSubject<Void, Never> = .init()
     private(set) var signInDidTapped: PassthroughSubject<(email: String?, password: String?), Never> = .init()
+    private var keyboardObserver: KeyboardObserver?
     
     private let logoImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = .applicationLogo
+        imageView.image = Images.appImages.appLogo
         return imageView
     }()
     
     private let titleLabel: UILabel = {
         let label = UILabel()
+        label.attributedText = TextConstants.title.rawValue.toAttributedString(highlighting: "DO IT",
+                                                                               defaultFont: .init(name: Fonts.poppinsMedium.rawValue, size: 25),
+                                                                               highlightedFont: .init(name: Fonts.darumaDropOne.rawValue, size: 25))
         return label
     }()
     
     private let supportLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 18, weight: .medium)
-        label.textColor = .white
+        label.font = UIFont(name: Fonts.poppinsMedium.rawValue, size: 18)
+        label.textColor = Colors.whiteColorFirst
+        label.text = TextConstants.support.rawValue
         return label
     }()
     
@@ -44,8 +58,9 @@ final class SignInView: UIView {
     
     private var emailTextField: CustomTextField = {
         let textField = CustomTextField()
-        textField.addImage(Images.email, imageDirection: .left)
+        textField.addImage(Images.TextFieldImages.email, imageDirection: .left)
         textField.attributesForPlaceholder = [.font: UIFont(name: Fonts.poppinsRegular.rawValue, size: 18) ?? .systemFont(ofSize: 18), .foregroundColor: Colors.blackColorThird]
+        textField.addAttributedPlaceholder(TextConstants.emailPlaceholder.rawValue)
         textField.backgroundColor = Colors.whiteColorFirst
         textField.layer.cornerRadius = 5
         textField.layer.masksToBounds = true
@@ -54,8 +69,9 @@ final class SignInView: UIView {
     
     private var passwordTextField: CustomTextField = {
         let textField = CustomTextField()
-        textField.addImage(Images.password, imageDirection: .left)
+        textField.addImage(Images.TextFieldImages.password, imageDirection: .left)
         textField.attributesForPlaceholder = [.font: UIFont(name: Fonts.poppinsRegular.rawValue, size: 18) ?? .systemFont(ofSize: 18), .foregroundColor: Colors.blackColorThird]
+        textField.addAttributedPlaceholder(TextConstants.passwordPlaceholder.rawValue)
         textField.backgroundColor = Colors.whiteColorFirst
         textField.layer.cornerRadius = 5
         textField.layer.masksToBounds = true
@@ -65,16 +81,25 @@ final class SignInView: UIView {
     private lazy var signInButton: UIButton = {
         let button = UIButton()
         var configuration = UIButton.Configuration.plain()
-        configuration.background.backgroundColor = #colorLiteral(red: 0.05490196078, green: 0.6470588235, blue: 0.9137254902, alpha: 1)
+        configuration.background.backgroundColor = Colors.lightBlueThird
         configuration.background.cornerRadius = 10
-        configuration.baseForegroundColor = .white
+        configuration.baseForegroundColor = Colors.whiteColorFirst
         button.configuration = configuration
+        button.setTitle(TextConstants.signUpButtonTitle.rawValue, for: .normal)
         button.addTarget(self, action: #selector(signInButtonAction), for: .touchUpInside)
         return button
     }()
     
-    private var anyAuthenticationMethod: UILabel = {
+    private lazy var anyAuthenticationMethod: UILabel = {
         let label = UILabel()
+        label.attributedText = TextConstants.additionalInfo.rawValue.toAttributedString(highlighting: "sign up",
+                                                                                        defaultFont: .init(name: Fonts.poppinsMedium.rawValue, size: 14),
+                                                                                        highlightedFont: .init(name: Fonts.poppinsMedium.rawValue, size: 14),
+                                                                                        alignment: .center,
+                                                                                        additionalColor: Colors.lightBlueSecond)
+        label.addRangeGesture(stringRange: "sign up") { [weak self] in
+            self?.textDidTapped.send()
+        }
         return label
     }()
     
@@ -83,6 +108,7 @@ final class SignInView: UIView {
     init() {
         super.init(frame: .zero)
         setupUI()
+        setupKeyboardObserver()
     }
     
     @available(*, unavailable)
@@ -95,6 +121,10 @@ final class SignInView: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
         layer.insertSublayer(Background.shared.getGradientLayer(frame: frame), at: 0)
+    }
+    
+    deinit {
+        keyboardObserver = nil
     }
 }
 
@@ -160,25 +190,6 @@ private extension SignInView {
             make.height.equalTo(passwordTextField.snp.height)
         }
     }
-}
-
-//MARK: - Public extension
-
-extension SignInView {
-    
-    //MARK: - Setup static text
-    
-    func setupStaticText(_ data: SignInStaticText) {
-        titleLabel.attributedText = data.title
-        supportLabel.text = data.support
-        emailTextField.addAttributedPlaceholder(data.emailPlaceholder)
-        passwordTextField.addAttributedPlaceholder(data.passwordPlaceholder)
-        signInButton.configuration?.title = data.signInButtonTitle
-        anyAuthenticationMethod.attributedText = data.additionalInfo
-        anyAuthenticationMethod.addRangeGesture(stringRange: "sign up") { [weak self] in
-            self?.textDidTapped.send()
-        }
-    }
     
     //MARK: - Sign in button action
     
@@ -186,4 +197,18 @@ extension SignInView {
     func signInButtonAction() {
         signInDidTapped.send((emailTextField.text, passwordTextField.text))
     }
+    
+    func setupKeyboardObserver() {
+        keyboardObserver = KeyboardObserver(
+            onAppear: { [weak self] duration, options in
+                guard let self = self else { return }
+                keyboardObserver?.adjustForKeyboardAppearance(view: self, degree: 2, duration: duration, options: options)
+            },
+            onDisappear: { [weak self] in
+                guard let self = self else { return }
+                keyboardObserver?.adjustForKeyboardAppearance(view: self, degree: 2, duration: 0.25, options: .curveEaseOut)
+            }
+        )
+    }
 }
+    

@@ -48,8 +48,8 @@ extension MainCoordinator {
         binding = coordinator.didFinish
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
-                self?.removeChild(coordinator)
                 self?.firstOpenService?.set(isFirstOpen: false)
+                coordinator.finish()
                 self?.start()
                 self?.removeChild(coordinator)
             }
@@ -64,6 +64,7 @@ extension MainCoordinator {
         binding = coordinator.finishAuthenticationPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] value in
+                coordinator.finish()
                 self?.firstOpenService?.set(value)
                 self?.start()
                 self?.removeChild(coordinator)

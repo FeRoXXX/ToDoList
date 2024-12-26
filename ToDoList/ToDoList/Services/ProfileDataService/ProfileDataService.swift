@@ -37,11 +37,12 @@ final class ProfileDataService {
     
     enum SubscribersType {
         case userProfileData(UserPublicDataModel)
-        case incompleteTasks([UserModel])
         case userTasks([UserModel])
         case taskDetails(UserModel)
+        case tasksByDate([UserModel])
         case createTasks
         case deleteTaskResult
+        case updateTaskStatusResult
         case updateTaskResult
         case logoutResult
     }
@@ -98,26 +99,14 @@ final class ProfileDataService {
             return
         }
         
-        let result = CoreDataService.shared.createTask(TaskRequestModel(title: title,
+        let result = CoreDataService.shared.createTask(TaskRequestModel(id: task.id,
+                                                                        title: title,
                                                                         description: description,
                                                                         endDate: endDate,
                                                                         isDone: task.isDone,
                                                                         relationshipId: relationshipId))
         if result {
             servicePublisher.send(.createTasks)
-        }
-    }
-    
-    //MARK: - Get incomplete task by user id
-    
-    func getUserIncompleteTasks(userId: UUID){
-        let result = CoreDataService.shared.getSortedIncompleteTasks(by: userId)
-        
-        switch result {
-        case .success(let success):
-            servicePublisher.send(.incompleteTasks(success))
-        case .failure(let failure):
-            return
         }
     }
     
@@ -141,13 +130,13 @@ final class ProfileDataService {
         }
     }
     
-    //MARK: - Update task by id
+    //MARK: - Update task status by id
     
-    func updateTaskById(_ taskId: UUID) {
-        let result = CoreDataService.shared.updateTaskById(taskId)
+    func updateTaskStatusById(_ taskId: UUID) {
+        let result = CoreDataService.shared.updateTaskStatusById(taskId)
         
         if result {
-            servicePublisher.send(.updateTaskResult)
+            servicePublisher.send(.updateTaskStatusResult)
         }
     }
     
@@ -156,5 +145,45 @@ final class ProfileDataService {
     func logout(user: UUID) {
         userDefaultsService.deleteAuthorizationState()
         servicePublisher.send(.logoutResult)
+    }
+    
+    //MARK: - Get task by date
+    
+    func getTaskByDate(date: Date, userId: UUID) {
+        let calendar = Calendar.current
+        let startOfDay = calendar.startOfDay(for: date)
+        guard let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay) else {
+            return
+        }
+        
+        let result = coreDataService.getTaskByDate(startOfDay, endOfDay, userId: userId)
+        
+        switch result {
+        case .success(let success):
+            servicePublisher.send(.tasksByDate(success))
+        case .failure(let failure):
+            break
+        }
+    }
+    
+    //MARK: - Update task by id
+    
+    func updateTaskById(_ task: TaskModel) {
+        guard let title = task.title,
+              let description = task.description,
+              let endDate = task.endDate,
+              let relationshipId = task.relationshipId else {
+            return
+        }
+        
+        let result = CoreDataService.shared.updateTaskByData(TaskRequestModel(id: task.id,
+                                                                              title: title,
+                                                                              description: description,
+                                                                              endDate: endDate,
+                                                                              isDone: task.isDone,
+                                                                              relationshipId: relationshipId))
+        if result {
+            servicePublisher.send(.updateTaskResult)
+        }
     }
 }

@@ -32,10 +32,10 @@ final class OnBoardingMainViewController: UIPageViewController {
     private lazy var nextViewButton: UIButton = {
         let button = UIButton()
         var configuration = UIButton.Configuration.plain()
-        configuration.background.backgroundColor = .white
-        configuration.image = Images.systemArrowRight
+        configuration.background.backgroundColor = Colors.whiteColorFirst
+        configuration.image = Images.NavigationImages.systemArrowRight
         button.configuration = configuration
-        button.tintColor = .black
+        button.tintColor = Colors.blackColorFirst
         button.addTarget(self, action: #selector(nextButtonClicked), for: .touchUpInside)
         return button
     }()

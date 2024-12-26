@@ -39,4 +39,9 @@ final class OnBoardingCoordinator: Coordinator {
         let controller = OnBoardingMainViewController(viewModel: viewModel, pages: pages)
         navigationController.setViewControllers([controller], animated: true)
     }
+    
+    override func finish() {
+        pages.removeAll()
+        bindings.removeAll()
+    }
 }

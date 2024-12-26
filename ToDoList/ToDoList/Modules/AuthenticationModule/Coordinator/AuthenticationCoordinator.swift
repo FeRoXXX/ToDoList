@@ -14,7 +14,8 @@ final class AuthenticationCoordinator: Coordinator {
     
     private(set) var finishAuthenticationPublisher: PassthroughSubject<UUID, Never> = .init()
     private var authService: AuthService?
-    private var bindings: Set<AnyCancellable> = []
+    private var authenticationMethodSubscriber: AnyCancellable?
+    private var routeToBackSubscriber: AnyCancellable?
     
     //MARK: - Initialization
     
@@ -28,6 +29,12 @@ final class AuthenticationCoordinator: Coordinator {
     override func start() {
         goToSignInController()
     }
+    
+    override func finish() {
+        authenticationMethodSubscriber = nil
+        routeToBackSubscriber = nil
+        removeAllChildCoordinators()
+    }
 }
 
 extension AuthenticationCoordinator {
@@ -36,19 +43,18 @@ extension AuthenticationCoordinator {
     
     func goToSignInController(_ animated: Bool = true) {
         let viewModel = SignInViewModel(authService: authService)
-        viewModel.navigateToSignUpPublisher
+        authenticationMethodSubscriber = viewModel.navigateToSignUpPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 self?.goToSignUpController()
             }
-            .store(in: &bindings)
         
-        viewModel.navigateToHomePublisher
+        routeToBackSubscriber = viewModel.navigateToHomePublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] value in
                 self?.finishAuthenticationPublisher.send(value)
             }
-            .store(in: &bindings)
+        
         let controller = SignInViewController(viewModel: viewModel)
         navigationController.setViewControllers([controller], animated: animated)
     }
@@ -57,19 +63,17 @@ extension AuthenticationCoordinator {
     
     func goToSignUpController() {
         let viewModel = SignUpViewModel(authService: authService)
-        viewModel.navigateToSignInPublisher
+        authenticationMethodSubscriber = viewModel.navigateToSignInPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 self?.goToSignInController(false)
             }
-            .store(in: &bindings)
         
-        viewModel.navigateToHomePublisher
+        routeToBackSubscriber = viewModel.navigateToHomePublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] value in
                 self?.finishAuthenticationPublisher.send(value)
             }
-            .store(in: &bindings)
         
         let controller = SignUpViewController(viewModel: viewModel)
         navigationController.setViewControllers([controller], animated: false)

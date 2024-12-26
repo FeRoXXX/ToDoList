@@ -27,7 +27,6 @@ final class OnBoardingMainViewModel {
     private(set) var changeImage: PassthroughSubject<String, Never> = .init()
     private(set) var routeToAuthentication: PassthroughSubject<Void, Never> = .init()
     
-    //MARK: - Public properties
     
     //MARK: - Initialization
     
@@ -44,10 +43,10 @@ extension OnBoardingMainViewModel {
     
     func initializeStaticData() {
         staticData = [
-            OnBoardingStaticElements(image: Images.firstPageImage, description: Constants.firstPageDescription.rawValue),
-            OnBoardingStaticElements(image: Images.secondPageImage, description: Constants.secondPageDescription.rawValue),
-            OnBoardingStaticElements(image: Images.thirdPageImage, description: Constants.thirdPageDescription.rawValue),
-            OnBoardingStaticElements(image: Images.fourthPageImage, description: Constants.fourthPageDescription.rawValue),
+            OnBoardingStaticElements(image: Images.OnBoardImages.firstPageImage, description: Constants.firstPageDescription.rawValue),
+            OnBoardingStaticElements(image: Images.OnBoardImages.secondPageImage, description: Constants.secondPageDescription.rawValue),
+            OnBoardingStaticElements(image: Images.OnBoardImages.thirdPageImage, description: Constants.thirdPageDescription.rawValue),
+            OnBoardingStaticElements(image: Images.OnBoardImages.fourthPageImage, description: Constants.fourthPageDescription.rawValue),
         ]
         staticDataPublisher.send(staticData)
     }
