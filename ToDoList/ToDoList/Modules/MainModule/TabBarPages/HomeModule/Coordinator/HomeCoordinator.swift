@@ -38,7 +38,9 @@ final class HomeCoordinator: Coordinator {
     }
     
     override func finish() {
-        
+        removeAllChildCoordinators()
+        bindings.removeAll()
+        routeToBackSubscription = nil
     }
 }
 

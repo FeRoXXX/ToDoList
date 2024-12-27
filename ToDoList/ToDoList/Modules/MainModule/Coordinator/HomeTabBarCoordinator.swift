@@ -56,7 +56,11 @@ final class HomeTabBarCoordinator: Coordinator {
         navigationController.tabBarItem = UITabBarItem(title: nil,
                                                        image: page.pageImageView(),
                                                        tag: page.pageNumber())
-        navigationController.view.layer.insertSublayer(Background.shared.getGradientLayer(frame: navigationController.view.frame), at: 0)
+        navigationController.view.layer.insertSublayer(navigationController.view.frame.getGradientLayer(colorTop: Colors.Background.appBackgroundTop,
+                                                                                                        colorBottom: Colors.Background.appBackgroundBottom,
+                                                                                                        startPoint: CGPoint(x: 0, y: 0),
+                                                                                                        endPoint: CGPoint(x: 0, y: 1)),
+                                                       at: 0)
         switch page {
         case .home:
             let coordinator = HomeCoordinator(navigationController: navigationController, profileService: profileDataService)

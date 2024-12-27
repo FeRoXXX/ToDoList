@@ -14,6 +14,7 @@ final class CalendarViewController: UIViewController {
     
     private var viewModel: CalendarViewModel
     private var contentView = CalendarView()
+    private var viewWillAppearPublisher: PassthroughSubject<Date, Never> = .init()
     private var bindings: Set<AnyCancellable> = []
     
     //MARK: - Lifecycle functions
@@ -23,6 +24,12 @@ final class CalendarViewController: UIViewController {
         setupUI()
         bind()
         viewModel.viewLoaded()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        guard let selectedDate = contentView.tasksCalendar.selectedDate else { return }
+        viewWillAppearPublisher.send(selectedDate)
     }
     
     //MARK: - Initialization
@@ -68,15 +75,28 @@ private extension CalendarViewController {
                     self?.viewModel.requestTasks(date)
                 }
                 .store(in: &bindings)
+            
+            viewWillAppearPublisher
+                .receive(on: DispatchQueue.main)
+                .sink { [weak self] currentDate in
+                    self?.viewModel.requestTasks(currentDate)
+                }
+                .store(in: &bindings)
         }
         
         //MARK: - bind viewModel to view
         
         func bindViewModelToView() {
-            viewModel.pushTableData
+            viewModel.$tableViewData
                 .receive(on: DispatchQueue.main)
                 .sink { [weak self] data in
                     self?.contentView.tableView.data = data
+                }
+                .store(in: &bindings)
+            viewModel.$datesOfEvents
+                .receive(on: DispatchQueue.main)
+                .sink { [weak self] dates in
+                    self?.contentView.tasksCalendar.numberOfEvents = dates
                 }
                 .store(in: &bindings)
         }

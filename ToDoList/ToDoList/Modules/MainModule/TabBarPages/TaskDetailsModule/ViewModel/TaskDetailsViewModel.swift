@@ -10,13 +10,17 @@ import Combine
 
 final class TaskDetailsViewModel {
     
+    enum Navigation {
+        case back
+        case newTask
+    }
+    
     //MARK: - Private properties
     
+    @Published var pushTaskDetails: TaskDetailsModel?
+    private(set) var navigation: PassthroughSubject<Navigation, Never> = .init()
     private let taskId: UUID
     private let profileDataService: ProfileDataService
-    private(set) var pushTaskDetails: PassthroughSubject<TaskDetailsModel, Never> = .init()
-    private(set) var routeToBack: PassthroughSubject<Void, Never> = .init()
-    private(set) var routeToNewTask: PassthroughSubject<Void, Never> = .init()
     private var bindings: Set<AnyCancellable> = []
     
     //MARK: - Initialization
@@ -41,11 +45,11 @@ private extension TaskDetailsViewModel {
                 switch type {
                 case .taskDetails(let value):
                     let dateAndTime = value.endDate.formattedForDisplayDateAndTime()
-                    self?.pushTaskDetails.send(TaskDetailsModel(title: value.title,
-                                                                date: dateAndTime.0,
-                                                                time: dateAndTime.1,
-                                                                description: value.noteDescription,
-                                                                isDone: value.isDone))
+                    self?.pushTaskDetails = TaskDetailsModel(title: value.title,
+                                                             date: dateAndTime.0,
+                                                             time: dateAndTime.1,
+                                                             description: value.noteDescription,
+                                                             isDone: value.isDone)
                 default:
                     break
                 }
@@ -59,7 +63,7 @@ private extension TaskDetailsViewModel {
             } receiveValue: { [weak self] type in
                 switch type {
                 case .deleteTaskResult:
-                    self?.routeToBack.send()
+                    self?.navigation.send(.back)
                 default:
                     break
                 }
@@ -73,7 +77,8 @@ private extension TaskDetailsViewModel {
             } receiveValue: { [weak self] type in
                 switch type {
                 case .updateTaskStatusResult:
-                    self?.routeToBack.send()
+                    guard let taskId = self?.taskId else { return }
+                    self?.profileDataService.getTaskById(taskId)
                 default:
                     break
                 }
@@ -104,10 +109,10 @@ extension TaskDetailsViewModel {
     }
     
     func navigateToBack() {
-        routeToBack.send()
+        self.navigation.send(.back)
     }
     
     func correctButtonDidTap() {
-        routeToNewTask.send()
+        self.navigation.send(.newTask)
     }
 }

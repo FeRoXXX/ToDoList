@@ -10,6 +10,11 @@ import Combine
 
 final class HomeTableView: UITableView {
     
+    enum Constants: String {
+        case firstSectionHeader = "Incomplete Tasks"
+        case secondSectionHeader = "Completed Tasks"
+    }
+    
     //MARK: - Private properties
     
     private(set) var cellTappedPublisher: PassthroughSubject<UUID, Never> = .init()
@@ -61,11 +66,11 @@ extension HomeTableView: UITableViewDelegate, UITableViewDataSource {
         switch section {
         case 0:
             let view = HomeTableHeaderView()
-            view.setupTitle("Incomplete Tasks")
+            view.setupTitle(Constants.firstSectionHeader.rawValue)
             return view
         case 1:
             let view = HomeTableHeaderView()
-            view.setupTitle("Completed Tasks")
+            view.setupTitle(Constants.secondSectionHeader.rawValue)
             return view
         default:
             return nil

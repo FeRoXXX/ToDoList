@@ -8,6 +8,12 @@
 import UIKit
 
 enum Colors {
+    enum Background {
+        static let appBackgroundTop = UIColor(red: 18/255, green: 83/255, blue: 170/255, alpha: 1).cgColor
+        static let appBackgroundBottom = UIColor(red: 5/255, green: 36/255, blue: 62/255, alpha: 1).cgColor
+        static let calendarBackgroundTop = UIColor.white.withAlphaComponent(0.4).cgColor
+        static let calendarBackgroundBottom = UIColor.white.withAlphaComponent(0.1).cgColor
+    }
     static let blackColorFirst = UIColor.black
     static let blackColorSecond = UIColor(red: 0, green: 0, blue: 0, alpha: 0.9)
     static let blackColorThird = UIColor(red: 0, green: 0, blue: 0, alpha: 0.44)

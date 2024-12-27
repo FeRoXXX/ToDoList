@@ -38,6 +38,8 @@ final class CalendarCoordinator: Coordinator {
     }
     
     override func finish() {
+        routeToBackSubscription = nil
+        routeToDetailsSubscription = nil
     }
 }
 

@@ -34,9 +34,7 @@ private extension HomeViewModel {
     func bind() {
         profileDataService.servicePublisher
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] error in
-                print(error)
-            } receiveValue: { [weak self] type in
+            .sink { [weak self] type in
                 switch type {
                 case .userProfileData(let data):
                     self?.pushUserProfileData.send(data)
@@ -48,26 +46,20 @@ private extension HomeViewModel {
         
         profileDataService.servicePublisher
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] error in
-                print(error)
-            } receiveValue: { [weak self] type in
+            .sink { [weak self] type in
                 switch type {
                 case .userTasks(let data):
-                    let completedTasks = Array(data.filter(\.isDone).map {ToDoListModel(taskId: $0.id,
-                                                                                        title: $0.title,
-                                                                                        date: $0.endDate.formattedForDisplay(),
-                                                                                        isComplete: $0.isDone)}.prefix(2))
-                    let incompleteTasks = Array(data.filter { !$0.isDone }.map { ToDoListModel(taskId: $0.id,
-                                                                                               title: $0.title,
-                                                                                               date: $0.endDate.formattedForDisplay(),
-                                                                                               isComplete: $0.isDone)}.prefix(2))
+                    let completedTasks = self?.sortTasksByDate(tasks: data.filter(\.isDone))
+                    let incompleteTasks = self?.sortTasksByDate(tasks: data.filter { !$0.isDone })
                     var parsedData: [[ToDoListModel]] = []
                     
-                    if !incompleteTasks.isEmpty {
+                    if let incompleteTasks,
+                       !incompleteTasks.isEmpty {
                         parsedData.append(incompleteTasks)
                     }
                     
-                    if !completedTasks.isEmpty {
+                    if let completedTasks,
+                       !completedTasks.isEmpty {
                         parsedData.append(completedTasks)
                     }
                     self?.pushTableViewData.send(parsedData)
@@ -77,6 +69,36 @@ private extension HomeViewModel {
             }
             .store(in: &bindings)
     }
+    
+    //MARK: - Sort array by current date
+    
+    func sortTasksByDate(tasks: [UserModel]) -> [ToDoListModel] {
+        let currentDate = Date()
+        
+        let sortedTasks = tasks
+            .sorted { task1, task2 in
+                let isTask1AfterCurrent = task1.endDate >= currentDate
+                let isTask2AfterCurrent = task2.endDate >= currentDate
+                
+                if isTask1AfterCurrent != isTask2AfterCurrent {
+                    return isTask1AfterCurrent
+                }
+                
+                return abs(task1.endDate.timeIntervalSince(currentDate)) < abs(task2.endDate.timeIntervalSince(currentDate))
+            }
+        
+        let parsedTasks = sortedTasks.map { task in
+            ToDoListModel(
+                taskId: task.id,
+                title: task.title,
+                date: task.endDate.formattedForDisplay(),
+                isComplete: task.isDone
+            )
+        }
+        
+        return Array(parsedTasks.prefix(2))
+    }
+
 }
 
 //MARK: - Public extension

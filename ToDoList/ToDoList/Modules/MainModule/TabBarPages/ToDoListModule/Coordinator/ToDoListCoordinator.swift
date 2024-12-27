@@ -13,10 +13,9 @@ final class ToDoListCoordinator: Coordinator {
     //MARK: - Private properties
     
     private var profileDataService: ProfileDataService
-    private var newTaskSubscription: AnyCancellable?
     private var newTaskCancelSubscription: AnyCancellable?
+    private var navigationSubscriber: AnyCancellable?
     private var routeToBackSubscription: AnyCancellable?
-    private var taskDetailSubscription: AnyCancellable?
     
     //MARK: - Initialization
     
@@ -29,23 +28,25 @@ final class ToDoListCoordinator: Coordinator {
     
     override func start() {
         let viewModel = ToDoListViewModel(profileDataService: profileDataService)
-        newTaskSubscription = viewModel.navigateToAddNew
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in
-                self?.routeToAddItem()
-            }
         
-        taskDetailSubscription = viewModel.routeToTaskDetails
+        navigationSubscriber = viewModel.navigationPublisher
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] value in
-                self?.routeToTaskDetails(taskId: value)
-            }
+            .sink(receiveValue: { [weak self] type in
+                switch type {
+                case .toAddNew:
+                    self?.routeToAddItem()
+                case .toDetails(let id):
+                    self?.routeToTaskDetails(taskId: id)
+                }
+            })
         let controller = ToDoListViewController(viewModel: viewModel)
         navigationController.setViewControllers([controller], animated: true)
     }
     
     override func finish() {
-        
+        newTaskCancelSubscription = nil
+        navigationSubscriber = nil
+        routeToBackSubscription = nil
     }
 }
 

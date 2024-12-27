@@ -8,7 +8,7 @@
 import UIKit
 import Combine
 
-final class NewTaskViewController: UIViewController {
+final class NewTaskViewController: UIViewController, AlertProtocol {
     
     //MARK: - Private properties
     
@@ -73,10 +73,20 @@ private extension NewTaskViewController {
         //MARK: - bind viewModel to view
         
         func bindViewModelToView() {
-            viewModel.pushTaskDetails
+            viewModel.$pushTaskDetails
                 .receive(on: DispatchQueue.main)
                 .sink { [weak self] value in
+                    guard let value else { return }
                     self?.contentView.setupTaskData(value)
+                }
+                .store(in: &bindings)
+            
+            viewModel.$pushTaskDetailsError
+                .receive(on: DispatchQueue.main)
+                .sink { [weak self] error in
+                    guard let error,
+                    let self else { return }
+                    self.showAlert(vc: self, message: error)
                 }
                 .store(in: &bindings)
         }

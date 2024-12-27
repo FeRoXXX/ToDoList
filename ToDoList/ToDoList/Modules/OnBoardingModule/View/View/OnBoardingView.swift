@@ -43,7 +43,11 @@ final class OnBoardingView: UIView {
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        layer.insertSublayer(Background.shared.getGradientLayer(frame: frame), at: 0)
+        let gradient = frame.getGradientLayer(colorTop: Colors.Background.appBackgroundTop,
+                                              colorBottom: Colors.Background.appBackgroundBottom,
+                                              startPoint: CGPoint(x: 0, y: 0),
+                                              endPoint: CGPoint(x: 0, y: 1))
+        layer.insertSublayer(gradient, at: 0)
     }
 }
 

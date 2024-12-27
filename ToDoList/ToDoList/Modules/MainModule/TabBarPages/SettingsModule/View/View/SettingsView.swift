@@ -11,13 +11,18 @@ import Combine
 
 final class SettingsView: UIView {
     
+    enum Constants: String {
+        case pageTitle = "Settings"
+        case logoutButton = "Logout"
+    }
+    
     //MARK: - Private properties
     
     private(set) var logoutButtonPublisher: PassthroughSubject<Void, Never> = PassthroughSubject()
     
     private var pageTitle: UILabel = {
         let label = UILabel()
-        label.text = "Settings"
+        label.text = Constants.pageTitle.rawValue
         label.font = UIFont(name: Fonts.poppinsBold.rawValue, size: 18)
         label.textColor = Colors.whiteColorFirst
         return label
@@ -29,7 +34,7 @@ final class SettingsView: UIView {
         configuration.background.backgroundColor = Colors.whiteColorFirst
         configuration.baseForegroundColor = Colors.redColor
         configuration.image = Images.SettingsImages.logout
-        configuration.title = "Logout"
+        configuration.title = Constants.logoutButton.rawValue
         configuration.imagePadding = 12
         button.configuration = configuration
         button.addTarget(self, action: #selector(logoutButtonAction), for: .touchUpInside)
@@ -41,6 +46,7 @@ final class SettingsView: UIView {
         tableView.backgroundColor = Colors.clearColor
         return tableView
     }()
+    
     //MARK: - Initialization
     
     init() {

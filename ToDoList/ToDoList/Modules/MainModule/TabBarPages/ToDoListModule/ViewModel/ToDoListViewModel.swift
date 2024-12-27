@@ -10,11 +10,15 @@ import Combine
 
 final class ToDoListViewModel {
     
+    enum Navigation {
+        case toDetails(UUID)
+        case toAddNew
+    }
+    
     //MARK: - Private properties
     
     @Published var tasksData: [ToDoListModel] = []
-    private(set) var navigateToAddNew: PassthroughSubject<Void, Never> = .init()
-    private(set) var routeToTaskDetails: PassthroughSubject<UUID, Never> = .init()
+    private(set) var navigationPublisher: PassthroughSubject<Navigation, Never> = .init()
     private var bindings: Set<AnyCancellable> = []
     private var profileDataService: ProfileDataService
     
@@ -47,9 +51,7 @@ extension ToDoListViewModel {
     func bind() {
         profileDataService.servicePublisher
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] error in
-                print(error)
-            } receiveValue: { [weak self] type in
+            .sink { [weak self] type in
                 switch type {
                 case .userTasks(let data):
                     let tasks = data.map { ToDoListModel(taskId: $0.id,
@@ -67,10 +69,10 @@ extension ToDoListViewModel {
     //MARK: - Navigate to addNewNote
     
     func navigateToAddNewTask() {
-        navigateToAddNew.send()
+        navigationPublisher.send(.toAddNew)
     }
     
     func navigateToTaskDetails(taskId: UUID) {
-        routeToTaskDetails.send(taskId)
+        navigationPublisher.send(.toDetails(taskId))
     }
 }

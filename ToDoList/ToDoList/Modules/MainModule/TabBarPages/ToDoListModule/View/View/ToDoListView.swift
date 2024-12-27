@@ -11,6 +11,10 @@ import Combine
 
 final class ToDoListView: UIView {
     
+    enum Constants: String {
+        case searchTextFieldPlaceholder = "Search by task title"
+    }
+    
     //MARK: - Private properties
     
     private(set) var addButtonDidTappedPublisher: PassthroughSubject<Void, Never> = PassthroughSubject()
@@ -21,7 +25,7 @@ final class ToDoListView: UIView {
         searchField.addImage(Images.TextFieldImages.search, imageDirection: .right)
         searchField.imageColor = Colors.whiteColorFourth
         searchField.attributesForPlaceholder = [.font: UIFont(name: Fonts.poppinsMedium.rawValue, size: 12) ?? .systemFont(ofSize: 12), .foregroundColor: Colors.whiteColorFourth]
-        searchField.addAttributedPlaceholder("Search by task title")
+        searchField.addAttributedPlaceholder(Constants.searchTextFieldPlaceholder.rawValue)
         searchField.layer.cornerRadius = 10
         searchField.layer.masksToBounds = true
         searchField.leftViewMode = .always

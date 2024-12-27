@@ -34,13 +34,8 @@ class CustomTextView: UITextView {
 extension CustomTextView: UITextViewDelegate {
     
     func textViewDidBeginEditing(_ textView: UITextView) {
-        if textView.text.isEmpty {
-            textView.attributedText = NSAttributedString(string: "Description", attributes: [
-                .font: UIFont(name: Fonts.poppinsRegular.rawValue, size: 16) ?? .systemFont(ofSize: 16),
-                .foregroundColor: Colors.whiteColorSecond
-            ])
-        } else {
-            textView.attributedText = nil
+        if textView.text == "Description" {
+            textView.text = ""
         }
     }
     
@@ -50,8 +45,6 @@ extension CustomTextView: UITextViewDelegate {
                 .font: UIFont(name: Fonts.poppinsRegular.rawValue, size: 16) ?? .systemFont(ofSize: 16),
                 .foregroundColor: Colors.whiteColorSecond
             ])
-        } else {
-            textView.attributedText = nil
         }
     }
 }

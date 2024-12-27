@@ -11,6 +11,15 @@ import Combine
 
 final class NewTaskInputView: UIView {
     
+    enum Constants: String {
+        case taskTextFieldPlaceholder = "task"
+        case descriptionTextFieldPlaceholder = "Description"
+        case dateTextFieldPlaceholder = "Date"
+        case timeTextFieldPlaceholder = "Time"
+        case cancelButtonTitle = "Cancel"
+        case createButtonTitle = "Create"
+    }
+    
     //MARK: - Private properties
     
     private(set) var createNewTaskPublisher: PassthroughSubject<NewTaskDataModel, Never> = .init()
@@ -22,7 +31,7 @@ final class NewTaskInputView: UIView {
         let textField = CustomTextField()
         textField.addImage(Images.TextFieldImages.taskTitle, imageDirection: .left)
         textField.attributesForPlaceholder = [.font: UIFont(name: Fonts.poppinsRegular.rawValue, size: 16) ?? .systemFont(ofSize: 16), .foregroundColor: Colors.whiteColorSecond]
-        textField.addAttributedPlaceholder("task")
+        textField.addAttributedPlaceholder(Constants.taskTextFieldPlaceholder.rawValue)
         textField.backgroundColor = Colors.darkBlue
         textField.textColor = Colors.whiteColorFirst
         textField.layer.cornerRadius = 5
@@ -37,7 +46,7 @@ final class NewTaskInputView: UIView {
         textView.layer.cornerRadius = 5
         textView.layer.masksToBounds = true
         textView.leftImage = Images.TextFieldImages.taskDescription
-        textView.attributedText = NSAttributedString(string: "Description", attributes: [
+        textView.attributedText = NSAttributedString(string: Constants.descriptionTextFieldPlaceholder.rawValue, attributes: [
             .font: UIFont(name: Fonts.poppinsRegular.rawValue, size: 16) ?? .systemFont(ofSize: 16),
             .foregroundColor: Colors.whiteColorSecond
         ])
@@ -65,7 +74,7 @@ final class NewTaskInputView: UIView {
         let textField = CustomTextField()
         textField.addImage(Images.TextFieldImages.taskDate, imageDirection: .left)
         textField.attributesForPlaceholder = [.font: UIFont(name: Fonts.poppinsRegular.rawValue, size: 16) ?? .systemFont(ofSize: 16), .foregroundColor: Colors.whiteColorSecond]
-        textField.addAttributedPlaceholder("Date")
+        textField.addAttributedPlaceholder(Constants.dateTextFieldPlaceholder.rawValue)
         textField.backgroundColor = Colors.darkBlue
         textField.textColor = Colors.whiteColorFirst
         textField.layer.cornerRadius = 5
@@ -78,7 +87,7 @@ final class NewTaskInputView: UIView {
         let textField = CustomTextField()
         textField.addImage(Images.TextFieldImages.taskTime, imageDirection: .left)
         textField.attributesForPlaceholder = [.font: UIFont(name: Fonts.poppinsRegular.rawValue, size: 16) ?? .systemFont(ofSize: 16), .foregroundColor: Colors.whiteColorSecond]
-        textField.addAttributedPlaceholder("Time")
+        textField.addAttributedPlaceholder(Constants.timeTextFieldPlaceholder.rawValue)
         textField.backgroundColor = Colors.darkBlue
         textField.textColor = Colors.whiteColorFirst
         textField.layer.cornerRadius = 5
@@ -91,7 +100,7 @@ final class NewTaskInputView: UIView {
         let button = UIButton()
         var configuration = UIButton.Configuration.plain()
         configuration.background.backgroundColor = Colors.whiteColorFirst
-        configuration.attributedTitle = AttributedString("cancel", attributes: AttributeContainer([
+        configuration.attributedTitle = AttributedString(Constants.cancelButtonTitle.rawValue, attributes: AttributeContainer([
             .font: UIFont(name: Fonts.poppinsMedium.rawValue, size: 16) ?? .systemFont(ofSize: 16),
             .foregroundColor: Colors.blackColorFirst
         ]))
@@ -109,7 +118,7 @@ final class NewTaskInputView: UIView {
         var configuration = UIButton.Configuration.plain()
         configuration.background.cornerRadius = 10
         configuration.background.backgroundColor = Colors.lightBlueThird
-        configuration.attributedTitle = AttributedString("create", attributes: AttributeContainer([
+        configuration.attributedTitle = AttributedString(Constants.createButtonTitle.rawValue, attributes: AttributeContainer([
             .font: UIFont(name: Fonts.poppinsMedium.rawValue, size: 16) ?? .systemFont(ofSize: 16),
             .foregroundColor: Colors.whiteColorFirst
         ]))

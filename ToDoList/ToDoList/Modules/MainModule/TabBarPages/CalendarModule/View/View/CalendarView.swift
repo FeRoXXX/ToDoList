@@ -11,11 +11,15 @@ import Combine
 
 final class CalendarView: UIView {
     
+    enum Constants: String {
+        case titleLabel = "Calendar"
+    }
+    
     //MARK: - Public properties
     
     var titleLabel: UILabel = {
         let label = UILabel()
-        label.text = "Calendar"
+        label.text = Constants.titleLabel.rawValue
         label.font = UIFont(name: Fonts.poppinsBold.rawValue, size: 18)
         label.textColor = Colors.whiteColorFirst
         return label
@@ -42,12 +46,6 @@ final class CalendarView: UIView {
     @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-    
-    //MARK: - Layout subviews
-    
-    override func layoutSubviews() {
-        super.layoutSubviews()
     }
 }
 

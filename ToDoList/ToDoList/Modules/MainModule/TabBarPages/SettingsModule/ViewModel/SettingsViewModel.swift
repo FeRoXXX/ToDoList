@@ -32,8 +32,7 @@ private extension SettingsViewModel {
     func bind() {
         profileDataService.servicePublisher
             .receive(on: DispatchQueue.main)
-            .sink { _ in
-            } receiveValue: { [weak self] types in
+            .sink { [weak self] types in
                 switch types {
                 case .logoutResult:
                     self?.routeToAuthentication.send()

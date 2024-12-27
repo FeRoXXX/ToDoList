@@ -8,7 +8,7 @@
 import UIKit
 import Combine
 
-final class SignUpViewController: UIViewController {
+final class SignUpViewController: UIViewController, AlertProtocol {
     
     //MARK: - Private properties
     
@@ -77,22 +77,14 @@ private extension SignUpViewController {
             viewModel.showErrorPublisher
                 .receive(on: DispatchQueue.main)
                 .sink { [weak self] value in
-                    self?.makeError(error: value)
+                    guard let self else { return }
+                    showAlert(vc: self, message: value)
                 }
                 .store(in: &bindings)
         }
         
         bindViewToViewModel()
         bindViewModelToView()
-    }
-    
-    //MARK: - Make error alert
-    
-    func makeError(error: String) {
-        let alert = UIAlertController(title: "Error", message: error, preferredStyle: .alert)
-        let alertAction = UIAlertAction(title: "OK", style: .cancel)
-        alert.addAction(alertAction)
-        present(alert, animated: true)
     }
 }
 

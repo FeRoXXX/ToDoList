@@ -12,11 +12,12 @@ final class NewTaskViewModel {
     
     //MARK: - Private properties
     
-    private var bindings: Set<AnyCancellable> = []
+    @Published var pushTaskDetails: TaskDetailsModel?
+    @Published var pushTaskDetailsError: String?
     private(set) var cancelNewTaskModule: PassthroughSubject<Void, Never> = .init()
-    private(set) var pushTaskDetails: PassthroughSubject<TaskDetailsModel, Never> = .init()
     private var profileDataService: ProfileDataService
     private var taskId: UUID?
+    private var bindings: Set<AnyCancellable> = []
     
     //MARK: - Initialization
     
@@ -52,13 +53,13 @@ private extension NewTaskViewModel {
         
         profileDataService.servicePublisher
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] error in
-                print(error)
-            } receiveValue: { [weak self] type in
+            .sink { [weak self] type in
                 switch type {
                 case .createTasks:
                     self?.profileDataService.getUserTasks()
                     self?.cancelNewTaskModule.send()
+                case .error(let error):
+                    self?.pushTaskDetailsError = error.message
                 default:
                     break
                 }
@@ -67,18 +68,20 @@ private extension NewTaskViewModel {
 
         profileDataService.servicePublisher
             .receive(on: DispatchQueue.main)
-            .sink { error in
-                
-            } receiveValue: { [weak self] types in
+            .sink { [weak self] types in
                 switch types {
                 case .taskDetails(let data):
                     let dateAndTime = data.endDate.formattedForDisplayDateAndTimeInTextField()
-                    self?.pushTaskDetails.send(TaskDetailsModel(title: data.title,
-                                                                date: dateAndTime.0,
-                                                                time: dateAndTime.1,
-                                                                description: data.noteDescription,
-                                                                isDone: data.isDone))
+                    self?.pushTaskDetails = TaskDetailsModel(title: data.title,
+                                                             date: dateAndTime.0,
+                                                             time: dateAndTime.1,
+                                                             description: data.noteDescription,
+                                                             isDone: data.isDone)
                 case .updateTaskResult:
+                    self?.profileDataService.getUserTasks()
+                    if let taskId = self?.taskId {
+                        self?.profileDataService.getTaskById(taskId)
+                    }
                     self?.cancelNewTaskModule.send()
                 default:
                     break

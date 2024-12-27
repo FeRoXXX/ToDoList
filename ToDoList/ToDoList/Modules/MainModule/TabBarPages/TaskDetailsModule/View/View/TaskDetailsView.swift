@@ -11,6 +11,12 @@ import Combine
 
 final class TaskDetailsView: UIView {
     
+    enum Constants: String {
+        case backButtonTitle = "Task Details"
+        case doneButtonTitle = "Done"
+        case deleteButtonTitle = "Delete"
+    }
+    
     //MARK: - Private properties
     
     private(set) var backButtonPublisher: PassthroughSubject<Void, Never> = PassthroughSubject()
@@ -20,7 +26,7 @@ final class TaskDetailsView: UIView {
     private lazy var backButton: UIButton = {
         let button = UIButton()
         var configuration = UIButton.Configuration.plain()
-        configuration.attributedTitle = AttributedString("Task Details", attributes: AttributeContainer([
+        configuration.attributedTitle = AttributedString(Constants.backButtonTitle.rawValue, attributes: AttributeContainer([
             .font: UIFont(name: Fonts.poppinsMedium.rawValue, size: 16) ?? .systemFont(ofSize: 16),
             .foregroundColor: Colors.whiteColorFirst
         ]))
@@ -66,14 +72,14 @@ final class TaskDetailsView: UIView {
     
     private lazy var doneButton: UIButton = {
         let button = UIButton()
-        configureButton(button: button, with: "Done", image: Images.TaskImages.complete)
+        configureButton(button: button, with: Constants.doneButtonTitle.rawValue, image: Images.TaskImages.complete)
         button.addTarget(self, action: #selector(completeButtonTapped), for: .touchUpInside)
         return button
     }()
     
     private lazy var deleteButton: UIButton = {
         let button = UIButton()
-        configureButton(button: button, with: "Delete", image: Images.TaskImages.taskDetailsDeleteButton)
+        configureButton(button: button, with: Constants.deleteButtonTitle.rawValue, image: Images.TaskImages.taskDetailsDeleteButton)
         button.addTarget(self, action: #selector(deleteButtonTapped), for: .touchUpInside)
         return button
     }()

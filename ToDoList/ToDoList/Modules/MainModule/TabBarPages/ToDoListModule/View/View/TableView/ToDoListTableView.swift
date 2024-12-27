@@ -10,6 +10,10 @@ import Combine
 
 final class ToDoListTableView: UITableView {
     
+    enum Constants: String {
+        case headerText = "Tasks List"
+    }
+    
     //MARK: - Private properties
     
     private(set) var selectedRowPublisher: PassthroughSubject<UUID, Never> = .init()
@@ -47,7 +51,7 @@ extension ToDoListTableView: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let view = ToDoListHeaderView()
-        view.setupTitle("Tasks List")
+        view.setupTitle(Constants.headerText.rawValue)
         return view
     }
     

@@ -62,32 +62,3 @@ class AnimatedPageControl: UIView {
         }
     }
 }
-
-extension AnimatedPageControl {
-    
-    func updateProgress(_ progress: CGFloat) {
-        guard !dots.isEmpty else { return }
-        
-        let baseIndex = currentPage
-        
-        let fractionalPart = progress - CGFloat(baseIndex)
-        
-        for (index, dot) in dots.enumerated() {
-            let isSelected = (index == baseIndex)
-            let isNext = (index == baseIndex + 1)
-            
-            let scale = isSelected ? 1 - fractionalPart : (isNext ? fractionalPart : 0)
-            let width = dotWidth + (selectedDotWidth - dotWidth) * scale
-            let height = dotHeight + (selectedDotHeight - dotHeight) * scale
-            
-            dot.frame.size = CGSize(width: width, height: height)
-            dot.layer.cornerRadius = height / 2
-        }
-        
-        var previousWidth: CGFloat = 0
-        for (index, dot) in dots.enumerated() {
-            dot.frame.origin.x = previousWidth
-            previousWidth += (index == currentPage ? selectedDotWidth : dotWidth) + dotSpacing
-        }
-    }
-}

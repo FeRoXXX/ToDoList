@@ -35,7 +35,6 @@ private extension SignInViewModel {
     func bind() {
         authService?.servicePublisher
             .receive(on: DispatchQueue.main)
-            .first()
             .sink { _ in
                 
             } receiveValue: { [weak self] types in

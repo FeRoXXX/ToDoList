@@ -48,7 +48,7 @@ extension CoreDataService {
     
     //MARK: - Create user method
     
-    func createUser(_ data: SignUpRequestModel) -> Result<UUID, Error> {
+    func createUser(_ data: SignUpRequestModel) -> Result<UUID, Errors> {
         defer {
             appDelegate.saveContext()
         }
@@ -93,7 +93,7 @@ extension CoreDataService {
     
     //MARK: - Get sorted task
     
-    func getSortedTasks(by userId: UUID) -> Result<[UserModel], Error> {
+    func getSortedTasks(by userId: UUID) -> Result<[UserModel], Errors> {
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "UserModel")
         let relationshipPredicate = NSPredicate(format: "relationship.id = %@", userId as CVarArg)
         fetchRequest.predicate = relationshipPredicate
@@ -111,7 +111,7 @@ extension CoreDataService {
     
     //MARK: - Check user already sign up
     
-    func checkUserExist(by data: SignInRequestModel) -> Result<Bool, Error> {
+    func checkUserExist(by data: SignInRequestModel) -> Result<Bool, Errors> {
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "AuthModel")
         let emailPredicate = NSPredicate(format: "email = %@", data.email)
         let passwordPredicate = NSPredicate(format: "password = %@", data.password)
@@ -131,7 +131,7 @@ extension CoreDataService {
     
     //MARK: - Get user by sign in data
     
-    func getUserID(by data: SignInRequestModel) -> Result<UUID, Error> {
+    func getUserID(by data: SignInRequestModel) -> Result<UUID, Errors> {
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "AuthModel")
         let emailPredicate = NSPredicate(format: "email = %@", data.email)
         let passwordPredicate = NSPredicate(format: "password = %@", data.password)
@@ -151,7 +151,7 @@ extension CoreDataService {
     
     //MARK: - Get email and fullName
     
-    func getUserPublicData(by id: UUID) -> Result<UserPublicDataModel, Error> {
+    func getUserPublicData(by id: UUID) -> Result<UserPublicDataModel, Errors> {
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "AuthModel")
         let idPredicate = NSPredicate(format: "id = %@", id as CVarArg)
         
@@ -267,7 +267,7 @@ extension CoreDataService {
     
     //MARK: - Get task by date
     
-    func getTaskByDate(_ startDay: Date, _ endDay: Date, userId: UUID) -> Result<[UserModel], Error> {
+    func getTaskByDate(_ startDay: Date, _ endDay: Date, userId: UUID) -> Result<[UserModel], Errors> {
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "UserModel")
         
         let relationshipPredicate = NSPredicate(format: "relationship.id = %@", userId as CVarArg)

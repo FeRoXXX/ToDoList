@@ -45,11 +45,13 @@ final class ProfileDataService {
         case updateTaskStatusResult
         case updateTaskResult
         case logoutResult
+        case error(Errors)
+        case dataBaseError(CoreDataService.Errors)
     }
     
     //MARK: - Private properties
     
-    private(set) var servicePublisher: PassthroughSubject<SubscribersType, Error> = PassthroughSubject()
+    private(set) var servicePublisher: PassthroughSubject<SubscribersType, Never> = PassthroughSubject()
     private var userDefaultsService: UserDefaultsService
     private var coreDataService: CoreDataService
     private var authenticationKey: UUID
@@ -71,7 +73,7 @@ final class ProfileDataService {
         case .success(let success):
             servicePublisher.send(.userProfileData(success))
         case .failure(let failure):
-            return
+            servicePublisher.send(.dataBaseError(failure))
         }
     }
     
@@ -85,7 +87,7 @@ final class ProfileDataService {
         case .success(let success):
             servicePublisher.send(.userTasks(success))
         case .failure(let failure):
-            return
+            servicePublisher.send(.dataBaseError(failure))
         }
     }
     
@@ -96,6 +98,7 @@ final class ProfileDataService {
               let description = task.description,
               let endDate = task.endDate else {
             
+            servicePublisher.send(.error(.emptyString))
             return
         }
         
@@ -115,9 +118,9 @@ final class ProfileDataService {
     func getTaskById(_ taskId: UUID)  {
         let result = coreDataService.getTaskDetailsById(taskId)
         
-        guard let result else { return }
-        
-        servicePublisher.send(.taskDetails(result))
+        if let result {
+            servicePublisher.send(.taskDetails(result))
+        }
     }
     
     //MARK: - Delete task by id
@@ -153,6 +156,7 @@ final class ProfileDataService {
         let calendar = Calendar.current
         let startOfDay = calendar.startOfDay(for: date)
         guard let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay) else {
+            servicePublisher.send(.dataBaseError(.doesNotExist))
             return
         }
         
@@ -162,7 +166,7 @@ final class ProfileDataService {
         case .success(let success):
             servicePublisher.send(.tasksByDate(success))
         case .failure(let failure):
-            break
+            servicePublisher.send(.dataBaseError(failure))
         }
     }
     
@@ -170,8 +174,13 @@ final class ProfileDataService {
     
     func updateTaskById(_ task: TaskModel) {
         guard let title = task.title,
+              !title.isEmpty,
               let description = task.description,
-              let endDate = task.endDate else {
+              !description.isEmpty,
+              description != "Description",
+              let endDate = task.endDate
+        else {
+            servicePublisher.send(.error(.emptyString))
             return
         }
         

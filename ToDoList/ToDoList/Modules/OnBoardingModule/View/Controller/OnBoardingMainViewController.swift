@@ -47,7 +47,6 @@ final class OnBoardingMainViewController: UIPageViewController {
         setupUI()
         bind()
         viewModel.initializeStaticData()
-//        setupScrollViewDelegate()
     }
     
     override func viewDidLayoutSubviews() {

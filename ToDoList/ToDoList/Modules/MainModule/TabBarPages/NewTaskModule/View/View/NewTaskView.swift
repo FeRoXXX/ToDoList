@@ -39,6 +39,7 @@ final class NewTaskView: UIView {
         super.init(frame: .zero)
         setupUI()
         setupKeyboardObserver()
+        addHidingKeyboardGesture()
     }
     
     @available(*, unavailable)
@@ -86,6 +87,7 @@ private extension NewTaskView {
                          make.bottom.equalToSuperview().inset(keyboardHeight)
                          make.leading.trailing.equalToSuperview()
                      }
+                     self.layoutIfNeeded()
                  })
              },
              onDisappear: { [weak self] in
@@ -95,6 +97,7 @@ private extension NewTaskView {
                          make.bottom.equalToSuperview()
                          make.leading.trailing.equalToSuperview()
                      }
+                     self.layoutIfNeeded()
                  }
              }
          )

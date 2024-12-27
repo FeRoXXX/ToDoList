@@ -15,7 +15,15 @@ final class CustomCalendarView: FSCalendar {
     //MARK: - Private properties
     
     private(set) var selectedDatePublisher: PassthroughSubject<Date, Never> = PassthroughSubject()
-    private var isBackgroundLoaded: Bool = false
+    private var isLayerSetup: Bool = false
+    
+    //MARK: - Public properties
+    
+    var numberOfEvents: [Date] = [] {
+        didSet {
+            self.reloadData()
+        }
+    }
     
     //MARK: - Navigation buttons
     
@@ -53,13 +61,22 @@ final class CustomCalendarView: FSCalendar {
         fatalError("init(coder:) has not been implemented")
     }
     
+    //MARK: - Layout subviews
+    
     override func layoutSubviews() {
         super.layoutSubviews()
-        if !isBackgroundLoaded {
-            let gradient = CalendarBackground.shared.getGradientLayer(bounds: bounds)
+        if !isLayerSetup {
+            let gradient = bounds.getGradientLayer(colorTop: Colors.Background.calendarBackgroundTop,
+                                                   colorBottom: Colors.Background.calendarBackgroundBottom,
+                                                   startPoint: CGPoint(x: 0, y: 0),
+                                                   endPoint: CGPoint(x: 1, y: 1))
             layer.insertSublayer(gradient, at: 0)
-            isBackgroundLoaded = true
+            isLayerSetup = true
         }
+    }
+    
+    func setupAllTasksDate() {
+        
     }
 }
 
@@ -77,12 +94,15 @@ private extension CustomCalendarView {
         appearance.todayColor = Colors.clearColor
         appearance.headerTitleColor = Colors.whiteColorFirst
         appearance.weekdayTextColor = Colors.whiteColorFirst
+        appearance.eventDefaultColor = Colors.lightBlueFifth
+        appearance.eventSelectionColor = Colors.lightBlueFifth
         appearance.headerMinimumDissolvedAlpha = 0
         firstWeekday = 2
         layer.cornerRadius = 10
         layer.masksToBounds = true
         delegate = self
-
+        dataSource = self
+        
         addSubviews()
         setupConstraints()
     }
@@ -106,9 +126,6 @@ private extension CustomCalendarView {
             make.centerY.equalTo(calendarHeaderView.snp.centerY)
             make.leading.equalTo(calendarHeaderView.snp.trailing).inset(80)
         }
-        
-        let gradient = CalendarBackground.shared.getGradientLayer(bounds: bounds)
-        layer.insertSublayer(gradient, at: 0)
     }
     
     @objc
@@ -124,11 +141,17 @@ private extension CustomCalendarView {
     }
 }
 
-//MARK: - FSCalendarDelegate
+//MARK: - FSCalendarDelegate & FSCalendarDataSource
 
-extension CustomCalendarView: FSCalendarDelegate {
+extension CustomCalendarView: FSCalendarDelegate, FSCalendarDataSource {
     
     func calendar(_ calendar: FSCalendar, didSelect date: Date, at monthPosition: FSCalendarMonthPosition) {
         selectedDatePublisher.send(date)
+    }
+    
+    func calendar(_ calendar: FSCalendar, numberOfEventsFor date: Date) -> Int {
+        let calendar = Calendar.current
+        let events = numberOfEvents.filter { calendar.isDate($0, inSameDayAs: date) }.prefix(2)
+        return events.count
     }
 }

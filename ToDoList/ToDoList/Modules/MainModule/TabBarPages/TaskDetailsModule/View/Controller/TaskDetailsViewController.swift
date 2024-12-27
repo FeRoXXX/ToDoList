@@ -87,9 +87,10 @@ private extension TaskDetailsViewController {
         //MARK: - bind viewModel to view
         
         func bindViewModelToView() {
-            viewModel.pushTaskDetails
+            viewModel.$pushTaskDetails
                 .receive(on: DispatchQueue.main)
                 .sink { [weak self] value in
+                    guard let value else { return }
                     self?.contentView.setupTaskData(value)
                 }
                 .store(in: &bindings)

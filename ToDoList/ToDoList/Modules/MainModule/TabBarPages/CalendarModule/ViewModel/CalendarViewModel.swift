@@ -12,7 +12,8 @@ final class CalendarViewModel {
     
     //MARK: - Private properties
     
-    private(set) var pushTableData: PassthroughSubject<[ToDoListModel], Never> = .init()
+    @Published var datesOfEvents: [Date] = []
+    @Published var tableViewData: [ToDoListModel] = []
     private(set) var routeToDetails: PassthroughSubject<UUID, Never> = .init()
     private var profileDataService: ProfileDataService
     private var bindings: Set<AnyCancellable> = []
@@ -33,15 +34,15 @@ private extension CalendarViewModel {
     func bind() {
         profileDataService.servicePublisher
             .receive(on: DispatchQueue.main)
-            .sink { error in
-                
-            } receiveValue: { [weak self] type in
+            .sink { [weak self] type in
                 switch type {
                 case .tasksByDate(let success):
-                    self?.pushTableData.send(success.map { ToDoListModel(taskId: $0.id,
-                                                                         title: $0.title,
-                                                                         date: $0.endDate.formattedForDisplay(),
-                                                                         isComplete: $0.isDone) })
+                    self?.tableViewData = success.map { ToDoListModel(taskId: $0.id,
+                                                                      title: $0.title,
+                                                                      date: $0.endDate.formattedForDisplay(),
+                                                                      isComplete: $0.isDone) }
+                case .userTasks(let success):
+                    self?.datesOfEvents = success.map { $0.endDate }
                 default:
                     break
                 }
@@ -60,6 +61,7 @@ extension CalendarViewModel {
     func viewLoaded() {
         bind()
         requestTasks(.now)
+        profileDataService.getUserTasks()
     }
     
     //MARK: - request tasks by date

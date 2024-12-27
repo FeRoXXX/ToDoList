@@ -15,8 +15,7 @@ final class TaskDetailsCoordinator: Coordinator {
     private let taskId: UUID
     private let profileService: ProfileDataService
     private(set) var routeToBackPublisher: PassthroughSubject<Void, Never> = PassthroughSubject()
-    private var routeToCorrectSubscribe: AnyCancellable?
-    private var routeToBackSubscribe: AnyCancellable?
+    private var currentWindowSubscription: AnyCancellable?
     private var newTaskCancelSubscription: AnyCancellable?
     
     //MARK: - Initialization
@@ -32,18 +31,17 @@ final class TaskDetailsCoordinator: Coordinator {
     override func start() {
         let viewModel = TaskDetailsViewModel(taskId: taskId, profileDataService: profileService)
         let controller = TaskDetailsViewController(viewModel: viewModel)
-        routeToBackSubscribe = viewModel.routeToBack
+        currentWindowSubscription = viewModel.navigation
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in
-                self?.routeToBackPublisher.send()
-                self?.finish()
+            .sink { [weak self] type in
+                switch type {
+                case .back:
+                    self?.routeToBackPublisher.send()
+                    self?.finish()
+                case .newTask:
+                    self?.routeToCorrectTask()
+                }
             }
-        
-        routeToCorrectSubscribe = viewModel.routeToNewTask
-            .receive(on: DispatchQueue.main)
-            .sink(receiveValue: { [weak self] _ in
-                self?.routeToCorrectTask()
-            })
         navigationController.pushViewController(controller, animated: false)
     }
     
