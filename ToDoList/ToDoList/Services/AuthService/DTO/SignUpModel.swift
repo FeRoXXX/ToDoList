@@ -8,7 +8,6 @@
 import Foundation
 
 struct SignUpModel {
-    
     let fullName: String?
     let email: String?
     let password: String?

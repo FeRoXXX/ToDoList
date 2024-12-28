@@ -41,7 +41,7 @@ final class AuthService {
     
     //MARK: - Private properties
     
-    private(set) var servicePublisher: PassthroughSubject<SubscribersType, Error> = PassthroughSubject()
+    private(set) var servicePublisher: PassthroughSubject<SubscribersType, Never> = PassthroughSubject()
     private var coreDataService: CoreDataService
     
     //MARK: - Initialization

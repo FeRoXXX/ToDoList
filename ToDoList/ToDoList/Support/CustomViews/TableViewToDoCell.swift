@@ -14,7 +14,6 @@ final class TableViewToDoCell: UITableViewCell {
     
     private var titleLabel: UILabel = {
         let label = UILabel()
-        label.text = "Client meeting"
         label.font = UIFont(name: Fonts.poppinsMedium.rawValue, size: 14)
         label.textColor = Colors.blackColorFirst
         return label
@@ -22,7 +21,6 @@ final class TableViewToDoCell: UITableViewCell {
     
     private var dateLabel: UILabel = {
         let label = UILabel()
-        label.text = "Tomorrow | 10:30pm"
         label.font = UIFont(name: Fonts.poppinsRegular.rawValue, size: 10)
         label.textColor = Colors.blackColorFirst
         return label
