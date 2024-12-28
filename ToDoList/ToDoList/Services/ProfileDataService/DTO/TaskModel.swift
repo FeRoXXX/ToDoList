@@ -12,12 +12,13 @@ struct TaskModel {
     let title: String?
     let description: String?
     let endDate: Date?
-    let isDone: Bool = false
+    var isDone: Bool = false
     
-    init(id: UUID = UUID(), title: String?, description: String?, endDate: Date?) {
+    init(id: UUID = UUID(), title: String?, description: String?, endDate: Date?, isDone: Bool = false) {
         self.id = id
         self.title = title
         self.description = description
         self.endDate = endDate
+        self.isDone = isDone
     }
 }

@@ -47,7 +47,7 @@ final class ToDoListView: UIView {
     
     var tableView: ToDoListTableView = {
         let tableView = ToDoListTableView(frame: .zero, style: .grouped)
-        tableView.backgroundColor = .clear
+        tableView.backgroundColor = Colors.clearColor
         return tableView
     }()
     
@@ -79,7 +79,7 @@ private extension ToDoListView {
     //MARK: - UI initialization functions
     
     func setupUI() {
-        backgroundColor = .clear
+        backgroundColor = Colors.clearColor
         addSubviews()
         setupConstraints()
     }

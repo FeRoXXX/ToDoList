@@ -52,13 +52,14 @@ private extension CalendarCoordinator {
     func routeToTaskDetails(taskId: UUID) {
         navigationController.isNavigationBarHidden = true
         let coordinator = TaskDetailsCoordinator(navigationController: navigationController, taskId: taskId, profileService: profileDataService)
-        coordinator.start()
         routeToBackSubscription = coordinator.routeToBackPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
+                coordinator.finish()
                 self?.removeChild(coordinator)
                 self?.routeToBackSubscription = nil
             }
+        coordinator.start()
         addChildCoordinator(coordinator)
     }
 }

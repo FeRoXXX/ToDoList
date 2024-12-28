@@ -75,7 +75,7 @@ private extension TaskDetailsDate {
     //MARK: - UI initialization functions
     
     func setupUI() {
-        backgroundColor = .clear
+        backgroundColor = Colors.clearColor
         addSubviews()
         setupConstraints()
     }

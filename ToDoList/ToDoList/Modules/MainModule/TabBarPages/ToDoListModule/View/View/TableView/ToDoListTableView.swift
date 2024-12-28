@@ -58,7 +58,7 @@ extension ToDoListTableView: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let data = data[indexPath.row]
         let cell = tableView.reuse(TableViewToDoCell.self, for: indexPath)
-        cell.backgroundColor = .clear
+        cell.backgroundColor = Colors.clearColor
         cell.selectionStyle = .none
         cell.cellSpacing = 17.5
         cell.setupData(data)

@@ -193,7 +193,6 @@ private extension NewTaskInputView {
             let dateFormatter = DateFormatter()
             dateFormatter.dateStyle = .full
             dateFormatter.dateFormat = "dd/MM/yyyy"
-            print(dateFormatter.string(from: datePicker.date))
             self.dateTextField.attributedText = NSAttributedString(string: dateFormatter.string(from: datePicker.date), attributes: [.font: UIFont(name: Fonts.poppinsRegular.rawValue, size: 16) ?? .systemFont(ofSize: 16), .foregroundColor: Colors.whiteColorSecond])
         }
         self.resignFirstResponder()
@@ -205,7 +204,6 @@ private extension NewTaskInputView {
             let dateFormatter = DateFormatter()
             dateFormatter.timeStyle = .medium
             dateFormatter.dateFormat = "HH:mm"
-            print(dateFormatter.string(from: datePicker.date))
             self.timeTextField.attributedText = NSAttributedString(string: dateFormatter.string(from: datePicker.date), attributes: [.font: UIFont(name: Fonts.poppinsRegular.rawValue, size: 16) ?? .systemFont(ofSize: 16), .foregroundColor: Colors.whiteColorSecond])
         }
         self.resignFirstResponder()

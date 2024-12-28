@@ -109,10 +109,12 @@ extension NewTaskViewModel {
     func pushTaskData(_ task: NewTaskDataModel) {
         let endDate = combineDateAndTime(dateString: task.date, timeString: task.time)
         if let taskId {
+            let isDone = pushTaskDetails?.isDone
             profileDataService.updateTaskById(TaskModel(id: taskId,
                                                         title: task.title,
                                                         description: task.description,
-                                                        endDate: endDate))
+                                                        endDate: endDate,
+                                                        isDone: isDone ?? false))
         } else {
             profileDataService.createTask(TaskModel(title: task.title,
                                                     description: task.description,

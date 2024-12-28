@@ -34,8 +34,7 @@ final class NewTaskCoordinator: Coordinator {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 self?.finish()
-                controller.dismiss(animated: true)
-                self?.bindings.removeAll()
+                self?.closeNewTaskModule.send()
             }
             .store(in: &bindings)
         controller.modalTransitionStyle = .coverVertical
@@ -44,6 +43,7 @@ final class NewTaskCoordinator: Coordinator {
     }
     
     override func finish() {
-        self.closeNewTaskModule.send()
+        navigationController.dismiss(animated: true)
+        self.bindings.removeAll()
     }
 }

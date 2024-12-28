@@ -19,8 +19,8 @@ class AnimatedPageControl: UIView {
     var selectedDotHeight: CGFloat = 8
     var selectedDotWidth: CGFloat = 33
     var dotSpacing: CGFloat = 9
-    var dotColor: UIColor = .white
-    var selectedDotColor: UIColor = .white
+    var dotColor: UIColor = Colors.whiteColorFirst
+    var selectedDotColor: UIColor = Colors.whiteColorFirst
 
     private var dots: [UIView] = []
 

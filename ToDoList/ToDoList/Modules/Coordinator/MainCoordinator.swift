@@ -25,7 +25,6 @@ final class MainCoordinator: Coordinator {
     //MARK: - Override functions
     
     override func start() {
-        print(FileManager.default.temporaryDirectory)
         if userDefaultsService.fetchState() {
             goToOnboarding()
         } else {

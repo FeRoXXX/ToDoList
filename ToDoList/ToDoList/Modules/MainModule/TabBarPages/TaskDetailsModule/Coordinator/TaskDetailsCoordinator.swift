@@ -37,7 +37,6 @@ final class TaskDetailsCoordinator: Coordinator {
                 switch type {
                 case .back:
                     self?.routeToBackPublisher.send()
-                    self?.finish()
                 case .newTask:
                     self?.routeToCorrectTask()
                 }
@@ -60,6 +59,7 @@ private extension TaskDetailsCoordinator {
         newTaskCancelSubscription = coordinator.closeNewTaskModule
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
+                coordinator.finish()
                 self?.removeChild(coordinator)
                 self?.newTaskCancelSubscription = nil
             }

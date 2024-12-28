@@ -39,9 +39,7 @@ private extension TaskDetailsViewModel {
     func bind() {
         profileDataService.servicePublisher
             .receive(on: DispatchQueue.main)
-            .sink { error in
-                print(error)
-            } receiveValue: { [weak self] type in
+            .sink { [weak self] type in
                 switch type {
                 case .taskDetails(let value):
                     let dateAndTime = value.endDate.formattedForDisplayDateAndTime()
@@ -58,9 +56,7 @@ private extension TaskDetailsViewModel {
         
         profileDataService.servicePublisher
             .receive(on: DispatchQueue.main)
-            .sink { error in
-                print(error)
-            } receiveValue: { [weak self] type in
+            .sink { [weak self] type in
                 switch type {
                 case .deleteTaskResult:
                     self?.navigation.send(.back)
@@ -72,9 +68,7 @@ private extension TaskDetailsViewModel {
         
         profileDataService.servicePublisher
             .receive(on: DispatchQueue.main)
-            .sink { error in
-                print(error)
-            } receiveValue: { [weak self] type in
+            .sink { [weak self] type in
                 switch type {
                 case .updateTaskStatusResult:
                     guard let taskId = self?.taskId else { return }

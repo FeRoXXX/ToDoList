@@ -31,7 +31,7 @@ final class HomeView: UIView {
     
     var tableView: HomeTableView = {
         let tableView = HomeTableView(frame: .zero, style: .grouped)
-        tableView.backgroundColor = .clear
+        tableView.backgroundColor = Colors.clearColor
         return tableView
     }()
     
@@ -61,7 +61,7 @@ private extension HomeView {
     //MARK: - UI initialization functions
     
     func setupUI() {
-        backgroundColor = .clear
+        backgroundColor = Colors.clearColor
         addSubviews()
         setupConstraints()
     }

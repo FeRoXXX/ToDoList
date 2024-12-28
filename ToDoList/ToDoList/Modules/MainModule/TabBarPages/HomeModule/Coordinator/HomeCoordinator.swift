@@ -56,6 +56,7 @@ private extension HomeCoordinator {
         routeToBackSubscription = coordinator.routeToBackPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
+                coordinator.finish()
                 self?.removeChild(coordinator)
                 self?.routeToBackSubscription = nil
             }

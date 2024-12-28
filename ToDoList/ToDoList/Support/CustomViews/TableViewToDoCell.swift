@@ -30,21 +30,21 @@ final class TableViewToDoCell: UITableViewCell {
     
     private var rightImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = .arrowRight
+        imageView.image = Images.NavigationImages.arrowRight
         imageView.contentMode = .scaleAspectFit
         return imageView
     }()
     
     private var leftImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = .complete
+        imageView.image = Images.TaskImages.complete
         imageView.contentMode = .scaleAspectFit
         return imageView
     }()
     
     private var contentBackgroundView: UIView = {
         let view = UIView()
-        view.backgroundColor = .white
+        view.backgroundColor = Colors.whiteColorFirst
         view.layer.cornerRadius = 5
         view.layer.masksToBounds = true
         return view

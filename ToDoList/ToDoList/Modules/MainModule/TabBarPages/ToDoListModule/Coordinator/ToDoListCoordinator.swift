@@ -59,6 +59,7 @@ private extension ToDoListCoordinator {
         newTaskCancelSubscription = coordinator.closeNewTaskModule
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
+                coordinator.finish()
                 self?.removeChild(coordinator)
                 self?.newTaskCancelSubscription = nil
             }
@@ -73,6 +74,7 @@ private extension ToDoListCoordinator {
         routeToBackSubscription = coordinator.routeToBackPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
+                coordinator.finish()
                 self?.removeChild(coordinator)
                 self?.routeToBackSubscription = nil
             }

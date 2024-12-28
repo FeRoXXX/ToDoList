@@ -15,7 +15,7 @@ extension String {
         highlightedFont: UIFont?,
         link: URL? = nil,
         alignment: NSTextAlignment = .left,
-        baseColor: UIColor = .white,
+        baseColor: UIColor = Colors.whiteColorFirst,
         additionalColor: UIColor? = nil
     ) -> NSAttributedString {
         guard let defaultFont else { return NSAttributedString(string: self) }
