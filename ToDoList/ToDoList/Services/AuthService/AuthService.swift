@@ -78,33 +78,35 @@ final class AuthService {
             servicePublisher.send(.error(Errors.badPassword))
             return
         }
-        
-        let result = coreDataService.checkUserExist(by: SignInRequestModel(email: email, password: password))
-        switch result {
-        case .success(let success):
-            if success {
-                servicePublisher.send(.error(Errors.alreadyExists))
-            } else {
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            let result = coreDataService.checkUserExist(by: SignInRequestModel(email: email, password: password))
+            switch result {
+            case .success(let success):
+                if success {
+                    servicePublisher.send(.error(Errors.alreadyExists))
+                } else {
+                    let result = coreDataService.createUser(SignUpRequestModel(email: email,
+                                                                               fullName: fullName,
+                                                                               password: password))
+                    
+                    switch result {
+                    case .success(let success):
+                        servicePublisher.send(.signUp(success))
+                    case .failure(let failure):
+                        servicePublisher.send(.error(failure))
+                    }
+                }
+            case .failure(_):
                 let result = coreDataService.createUser(SignUpRequestModel(email: email,
-                                                                   fullName: fullName,
-                                                                   password: password))
-                
+                                                                           fullName: fullName,
+                                                                           password: password))
                 switch result {
                 case .success(let success):
                     servicePublisher.send(.signUp(success))
                 case .failure(let failure):
                     servicePublisher.send(.error(failure))
                 }
-            }
-        case .failure(_):
-            let result = coreDataService.createUser(SignUpRequestModel(email: email,
-                                                               fullName: fullName,
-                                                               password: password))
-            switch result {
-            case .success(let success):
-                servicePublisher.send(.signUp(success))
-            case .failure(let failure):
-                servicePublisher.send(.error(failure))
             }
         }
     }
@@ -130,13 +132,15 @@ final class AuthService {
             servicePublisher.send(.error(Errors.badPassword))
             return
         }
-        
-        let result = coreDataService.getUserID(by: SignInRequestModel(email: email, password: password))
-        switch result {
-        case .success(let success):
-            servicePublisher.send(.signIn(success))
-        case .failure(let failure):
-            servicePublisher.send(.error(failure))
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            let result = coreDataService.getUserID(by: SignInRequestModel(email: email, password: password))
+            switch result {
+            case .success(let success):
+                servicePublisher.send(.signIn(success))
+            case .failure(let failure):
+                servicePublisher.send(.error(failure))
+            }
         }
     }
 }

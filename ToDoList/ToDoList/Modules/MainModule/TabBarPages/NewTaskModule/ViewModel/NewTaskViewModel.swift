@@ -52,7 +52,7 @@ private extension NewTaskViewModel {
     func bind() {
         
         profileDataService.servicePublisher
-            .receive(on: DispatchQueue.main)
+            .receive(on: DispatchQueue.global())
             .sink { [weak self] type in
                 switch type {
                 case .createTasks:
@@ -67,7 +67,7 @@ private extension NewTaskViewModel {
             .store(in: &bindings)
 
         profileDataService.servicePublisher
-            .receive(on: DispatchQueue.main)
+            .receive(on: DispatchQueue.global())
             .sink { [weak self] types in
                 switch types {
                 case .taskDetails(let data):

@@ -63,7 +63,7 @@ private extension CalendarViewController {
         
         func bindViewToViewModel() {
             contentView.tableView.selectedRowPublisher
-                .receive(on: DispatchQueue.main)
+                .receive(on: DispatchQueue.global())
                 .sink { [weak self] id in
                     self?.viewModel.navigateToDetailById(id)
                 }

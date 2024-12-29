@@ -33,7 +33,7 @@ private extension CalendarViewModel {
     
     func bind() {
         profileDataService.servicePublisher
-            .receive(on: DispatchQueue.main)
+            .receive(on: DispatchQueue.global())
             .sink { [weak self] type in
                 switch type {
                 case .tasksByDate(let success):

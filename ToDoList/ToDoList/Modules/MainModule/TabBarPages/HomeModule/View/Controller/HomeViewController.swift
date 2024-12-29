@@ -56,7 +56,7 @@ private extension HomeViewController {
         
         func bindViewToViewModel() {
             contentView.tableView.cellTappedPublisher
-                .receive(on: DispatchQueue.main)
+                .receive(on: DispatchQueue.global())
                 .sink { [weak self] id in
                     self?.viewModel.navigateToDetails(for: id)
                 }

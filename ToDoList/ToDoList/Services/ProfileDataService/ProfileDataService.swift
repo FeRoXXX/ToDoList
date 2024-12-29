@@ -67,27 +67,32 @@ final class ProfileDataService {
     //MARK: - Get email and full name by user id
     
     func getEmailAndFullName() {
-        let result = coreDataService.getUserPublicData(by: authenticationKey)
-        
-        switch result {
-        case .success(let success):
-            servicePublisher.send(.userProfileData(success))
-        case .failure(let failure):
-            servicePublisher.send(.dataBaseError(failure))
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            let result = coreDataService.getUserPublicData(by: authenticationKey)
+            
+            switch result {
+            case .success(let success):
+                servicePublisher.send(.userProfileData(success))
+            case .failure(let failure):
+                servicePublisher.send(.dataBaseError(failure))
+            }
         }
     }
     
     //MARK: - Get all tasks by user id
     
     func getUserTasks() {
-        
-        let result = coreDataService.getSortedTasks(by: authenticationKey)
-        
-        switch result {
-        case .success(let success):
-            servicePublisher.send(.userTasks(success))
-        case .failure(let failure):
-            servicePublisher.send(.dataBaseError(failure))
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            let result = coreDataService.getSortedTasks(by: authenticationKey)
+            
+            switch result {
+            case .success(let success):
+                servicePublisher.send(.userTasks(success))
+            case .failure(let failure):
+                servicePublisher.send(.dataBaseError(failure))
+            }
         }
     }
     
@@ -102,52 +107,67 @@ final class ProfileDataService {
             return
         }
         
-        let result = coreDataService.createTask(TaskRequestModel(id: task.id,
-                                                                        title: title,
-                                                                        description: description,
-                                                                        endDate: endDate,
-                                                                        isDone: task.isDone,
-                                                                        relationshipId: authenticationKey))
-        if result {
-            servicePublisher.send(.createTasks)
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            let result = coreDataService.createTask(TaskRequestModel(id: task.id,
+                                                                     title: title,
+                                                                     description: description,
+                                                                     endDate: endDate,
+                                                                     isDone: task.isDone,
+                                                                     relationshipId: authenticationKey))
+            if result {
+                servicePublisher.send(.createTasks)
+            }
         }
     }
     
     //MARK: - Get task detail by task id
     
     func getTaskById(_ taskId: UUID)  {
-        let result = coreDataService.getTaskDetailsById(taskId)
-        
-        if let result {
-            servicePublisher.send(.taskDetails(result))
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            let result = coreDataService.getTaskDetailsById(taskId)
+            
+            if let result {
+                servicePublisher.send(.taskDetails(result))
+            }
         }
     }
     
     //MARK: - Delete task by id
     
     func deleteTaskById(_ taskId: UUID) {
-        let result = coreDataService.deleteTaskById(taskId)
-        
-        if result {
-            servicePublisher.send(.deleteTaskResult)
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            let result = coreDataService.deleteTaskById(taskId)
+            
+            if result {
+                servicePublisher.send(.deleteTaskResult)
+            }
         }
     }
     
     //MARK: - Update task status by id
     
     func updateTaskStatusById(_ taskId: UUID) {
-        let result = coreDataService.updateTaskStatusById(taskId)
-        
-        if result {
-            servicePublisher.send(.updateTaskStatusResult)
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            let result = coreDataService.updateTaskStatusById(taskId)
+            
+            if result {
+                servicePublisher.send(.updateTaskStatusResult)
+            }
         }
     }
     
     //MARK: - Logout
     
     func logout() {
-        userDefaultsService.deleteAuthorizationState()
-        servicePublisher.send(.logoutResult)
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            userDefaultsService.deleteAuthorizationState()
+            servicePublisher.send(.logoutResult)
+        }
     }
     
     //MARK: - Get task by date
@@ -160,13 +180,16 @@ final class ProfileDataService {
             return
         }
         
-        let result = coreDataService.getTaskByDate(startOfDay, endOfDay, userId: authenticationKey)
-        
-        switch result {
-        case .success(let success):
-            servicePublisher.send(.tasksByDate(success))
-        case .failure(let failure):
-            servicePublisher.send(.dataBaseError(failure))
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            let result = coreDataService.getTaskByDate(startOfDay, endOfDay, userId: authenticationKey)
+            
+            switch result {
+            case .success(let success):
+                servicePublisher.send(.tasksByDate(success))
+            case .failure(let failure):
+                servicePublisher.send(.dataBaseError(failure))
+            }
         }
     }
     
@@ -184,14 +207,17 @@ final class ProfileDataService {
             return
         }
         
-        let result = coreDataService.updateTaskByData(TaskRequestModel(id: task.id,
-                                                                       title: title,
-                                                                       description: description,
-                                                                       endDate: endDate,
-                                                                       isDone: task.isDone,
-                                                                       relationshipId: authenticationKey))
-        if result {
-            servicePublisher.send(.updateTaskResult)
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            let result = coreDataService.updateTaskByData(TaskRequestModel(id: task.id,
+                                                                           title: title,
+                                                                           description: description,
+                                                                           endDate: endDate,
+                                                                           isDone: task.isDone,
+                                                                           relationshipId: authenticationKey))
+            if result {
+                servicePublisher.send(.updateTaskResult)
+            }
         }
     }
 }

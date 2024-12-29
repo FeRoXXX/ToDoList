@@ -50,7 +50,7 @@ extension ToDoListViewModel {
     
     func bind() {
         profileDataService.servicePublisher
-            .receive(on: DispatchQueue.main)
+            .receive(on: DispatchQueue.global())
             .sink { [weak self] type in
                 switch type {
                 case .userTasks(let data):

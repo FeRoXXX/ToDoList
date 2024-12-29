@@ -63,7 +63,7 @@ private extension NewTaskViewController {
                 .store(in: &bindings)
             
             contentView.contentView.cancelPublisher
-                .receive(on: DispatchQueue.main)
+                .receive(on: DispatchQueue.global())
                 .sink { [weak self] _ in
                     self?.viewModel.cancelTaskCreation()
                 }

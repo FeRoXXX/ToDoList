@@ -38,7 +38,7 @@ private extension TaskDetailsViewModel {
     //MARK: - Bind
     func bind() {
         profileDataService.servicePublisher
-            .receive(on: DispatchQueue.main)
+            .receive(on: DispatchQueue.global())
             .sink { [weak self] type in
                 switch type {
                 case .taskDetails(let value):
@@ -55,7 +55,7 @@ private extension TaskDetailsViewModel {
             .store(in: &bindings)
         
         profileDataService.servicePublisher
-            .receive(on: DispatchQueue.main)
+            .receive(on: DispatchQueue.global())
             .sink { [weak self] type in
                 switch type {
                 case .deleteTaskResult:
@@ -67,7 +67,7 @@ private extension TaskDetailsViewModel {
             .store(in: &bindings)
         
         profileDataService.servicePublisher
-            .receive(on: DispatchQueue.main)
+            .receive(on: DispatchQueue.global())
             .sink { [weak self] type in
                 switch type {
                 case .updateTaskStatusResult:

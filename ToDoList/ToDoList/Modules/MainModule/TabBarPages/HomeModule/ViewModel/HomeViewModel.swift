@@ -33,7 +33,7 @@ private extension HomeViewModel {
     
     func bind() {
         profileDataService.servicePublisher
-            .receive(on: DispatchQueue.main)
+            .receive(on: DispatchQueue.global())
             .sink { [weak self] type in
                 switch type {
                 case .userProfileData(let data):
@@ -45,7 +45,7 @@ private extension HomeViewModel {
             .store(in: &bindings)
         
         profileDataService.servicePublisher
-            .receive(on: DispatchQueue.main)
+            .receive(on: DispatchQueue.global())
             .sink { [weak self] type in
                 switch type {
                 case .userTasks(let data):

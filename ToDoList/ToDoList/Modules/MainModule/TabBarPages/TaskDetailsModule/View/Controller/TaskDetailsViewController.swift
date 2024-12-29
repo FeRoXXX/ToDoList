@@ -56,7 +56,7 @@ private extension TaskDetailsViewController {
         
         func bindViewToViewModel() {
             contentView.backButtonPublisher
-                .receive(on: DispatchQueue.main)
+                .receive(on: DispatchQueue.global())
                 .sink { [weak self] _ in
                     self?.viewModel.navigateToBack()
                 }

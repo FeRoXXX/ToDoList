@@ -34,7 +34,7 @@ private extension SignUpViewModel {
     
     func bind() {
         authService?.servicePublisher
-            .receive(on: DispatchQueue.main)
+            .receive(on: DispatchQueue.global())
             .sink { [weak self] types in
                 switch types {
                 case .signUp(let data):

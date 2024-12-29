@@ -56,14 +56,14 @@ private extension ToDoListViewController {
         
         func bindViewToViewModel() {
             contentView.addButtonDidTappedPublisher
-                .receive(on: DispatchQueue.main)
+                .receive(on: DispatchQueue.global())
                 .sink { [weak self] _ in
                     self?.viewModel.navigateToAddNewTask()
                 }
                 .store(in: &bindings)
             
             contentView.tableView.selectedRowPublisher
-                .receive(on: DispatchQueue.main)
+                .receive(on: DispatchQueue.global())
                 .sink { [weak self] taskId in
                     self?.viewModel.navigateToTaskDetails(taskId: taskId)
                 }
